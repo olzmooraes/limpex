@@ -1,0 +1,62 @@
+# PAPEL
+Você é um especialista em criação de App mobile first com UX/IU sênior.
+
+# OBJETIVO
+Criação de um App para mobile para gerenciar as faxinas feitas em uma casa de acordo com os usuários cadastrados naquela casa. Onde um usuárioo cria a casa, e adiciona os outros usuários naquela casa.
+
+# CONTEXTO
+Em uma casa onde as pessoas tem rotinas diferentes o App irá gerenciar quais faxinas foram feitas e cqual foi o dia da semana, resetando os valores a cada fim de uma semana
+
+# REGRAS DE PROCESSAMENTO
+- Tela inicial
+1. O App terá uma tela inicial onde irá ser feito uma validação no banco contando quantos usuários já existem criados.
+2. Se existirem menos de 100 usuários criados, será apresentado a tela de login para o usuário.
+3. Se existirem mais de 100 usuários criados, será apresentado um aviso que não pode ser criado um cadastro novo, e logo abaixo os campos de login dos usuários já existentes
+4. A tela de login precisa conter informações para um novo cadastro ou a disponibilidade de acessar o login do usuário.
+5. cadastro do usuário pode ser feito de duas maneiras: nome e e-mail para registro ou login com o google.
+
+- Tela Principal (Primeiro item da navbar)
+6. Após o Login, na tela inicial estará apresentando:
+	6.1: as faxinas que já foram realizadas
+	6.2: a criação de uma nova faxina.
+	6.3: Uma navbar de navegação.
+	6.4: O botão de sair
+7. A apresentação das faxinas já realizadas terão as informações de: 
+	7.1: uma lista do que foi feito, podendo ser expandida se a lista haver mais de 2 itens;
+	7.2: O usuário que realizou a faxina
+	7.3: O dia que foi feito a faxina
+	7.4: Se caso haver alguma observação, aparecerá um ícone indicativo de que aquela faxina contém ressalvas
+
+- Tela de criação das faxinas (Item central da navbar)
+8. Quando o usuário precisar criar a faxina, ele terá algumas informações para preenchimento:
+	8.1: Quem fez a faxina: Vir pré-definido com ele, porém, pode ser alterado para os outros usuários vinculados na casa
+	8.2: Dia da semana que foi feito a faxina: Pré-definido com o dia atual, porém pode ser alterado por qualquer outro dia da semana
+	8.3: Marcação do que foi feito: Ele terá uma seria de badles que ele poderá selecionar para anexar aquela faxina
+	8.4: Um campo de texto para ele adicionar alguma observação.
+
+- Tela de criação dos badles (item da navbar)
+9. Para o usuário não precisar escrever todas as vezes o que ele fez, o app terá itens de limpeza que serão vinculas no momento de criação da faxina.
+10. O App fornecerá alguns itens pré-definidos, sendo eles: janelas e portas, quarto 1, quarto 2, quarto 3, banheiro, varanda, cozinha, sala, Casa completa, garagem, calçada, área gourmet, mobilia.
+11. O usuário poderá criar novos badles, onde para criação basta clicar num ícone de criar, e adicionar um nome para ele.
+12. O íco de criação de novos badles ficará disponível até o usuário atingir 20 novos badles.
+13. Todos os badles do App poderão ser excluídos, inclusive os pré-existentes no App.
+
+- Tela de criar / vincular a uma casa (item da navbar)
+14. usuário poderá criar uma casa e enviar um código para os outros usuários participarem da casa
+15. o usuário também poderá vincular a uma casa, apenas passando um código 
+16. apenas usuários cadastrados poderão fazer parte de uma casa
+17. Um usuário pode criar apenas 1 casa
+18. um usuário pode fazer parte de várias casas
+19. Qualquer usuário vinculado a uma casa pode criar uma faxina
+20. Apenas o criador da casa tem a permissão para criar e excluir os badles.
+21. Apenas o criador da casa tem a permissão para excluir a casa
+
+- Tela de Histórico de limpezas (item da navbar)
+A organização do histórico ficará organizado por semanas em cards ocupando um abaixo do outro
+Para o título do card, será seguido dessa predefinição: "Semana [número da semana de 1 a 4] de [nome do mês] de [número do ano]"
+Abaixo do título ficará exibido os dias da semana em pequenos blocos, seguindo essa ordem sem quebrar de linha: dom seg ter qua qui sex sab, onde a cor de fundo será diferente para os dias que tiveram faxinas
+No momento que clicar no card, ele irá expandir para baixo mostrando o que foi faxinado naquela semana, não precisa separar pelos dias, apenas mostrar o que foi feito.
+
+# RESTRIÇÕES OBRIGATÓRIAS
+preencher;;;
+  
