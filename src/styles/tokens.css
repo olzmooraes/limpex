@@ -1,0 +1,66 @@
+/* Design Tokens Semânticos do Limpex - Mobile First */
+:root {
+  /* Cores Primárias - Verde Esmeralda Limpeza Fresca */
+  --color-primary-50: #ecfdf5;
+  --color-primary-100: #d1fae5;
+  --color-primary-200: #a7f3d0;
+  --color-primary-300: #6ee7b7;
+  --color-primary-400: #34d399;
+  --color-primary-500: #10b981;
+  --color-primary-600: #059669;
+  --color-primary-700: #047857;
+
+  /* Cores de Acento - Ciano Água Fresca */
+  --color-accent-400: #22d3ee;
+  --color-accent-500: #06b6d4;
+  --color-accent-600: #0891b2;
+
+  /* Alertas & Notificações */
+  --color-warning-100: #fef3c7;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+
+  /* Destrutivo / Exclusão */
+  --color-danger-100: #fee2e2;
+  --color-danger-500: #ef4444;
+  --color-danger-600: #dc2626;
+
+  /* Superfícies & Neutros (Dark Mode Padrão Premium) */
+  --bg-app: #090d16;
+  --bg-surface: #131b2e;
+  --bg-surface-elevated: #1e293b;
+  --bg-surface-glass: rgba(19, 27, 46, 0.82);
+  --border-subtle: #1e293b;
+  --border-focus: #334155;
+  --border-active: #10b981;
+
+  /* Tipografia & Cores de Texto */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #090d16;
+
+  /* Alvos de Toque & Ergonomia Mobile */
+  --touch-target-min: 44px;
+  --bottom-navbar-height: 68px;
+  --header-height: 60px;
+  --app-max-width: 430px;
+
+  /* Raios de Borda */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  /* Sombras & Profundidade */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 8px 24px rgba(16, 185, 129, 0.35);
+
+  /* Transições e Curvas Suaves */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}

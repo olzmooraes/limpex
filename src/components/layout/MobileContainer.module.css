@@ -1,0 +1,30 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: radial-gradient(circle at 50% 10%, #172554 0%, #050811 100%);
+}
+
+.phoneViewport {
+  width: 100%;
+  max-width: var(--app-max-width);
+  height: 100vh;
+  height: 100dvh;
+  background-color: var(--bg-app);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+}
+
+@media (min-width: 480px) {
+  .phoneViewport {
+    height: 92vh;
+    height: 92dvh;
+    border-radius: 36px;
+    border: 1px solid var(--border-subtle);
+  }
+}

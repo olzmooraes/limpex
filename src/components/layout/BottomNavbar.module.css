@@ -1,0 +1,105 @@
+.navbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--bottom-navbar-height);
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 4px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 50;
+}
+
+.navItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  padding: 4px 0;
+  gap: 3px;
+  color: var(--text-muted);
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-bounce);
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+.navItem:active .iconContainer {
+  transform: scale(0.9);
+}
+
+.navItem.active {
+  color: var(--color-primary-400);
+}
+
+.navItem.active .iconContainer {
+  transform: translateY(-2px);
+}
+
+.navItem.active .label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Botão Central: + Faxina */
+.centralButtonWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: var(--touch-target-min);
+}
+
+.centralButton {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+  color: #ffffff;
+  box-shadow: var(--shadow-glow);
+  position: absolute;
+  top: -18px;
+  transition: transform var(--transition-bounce), box-shadow var(--transition-fast);
+}
+
+.centralButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 28px rgba(16, 185, 129, 0.5);
+}
+
+.centralButton:active {
+  transform: scale(0.92);
+}
+
+.centralActive {
+  background: linear-gradient(135deg, var(--color-accent-500), var(--color-primary-500));
+  box-shadow: 0 8px 24px rgba(6, 182, 212, 0.5);
+}
+
+.centralLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-primary-400);
+  margin-top: 24px;
+}
