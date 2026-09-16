@@ -1,0 +1,244 @@
+/* TSK-302 / SPEC-010: Tela de Gestão de Badges (Item 2 da Navbar) */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Subcontadores */
+.subCounterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.subCounter {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.systemCounter {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Avisos de limite */
+.limitNotice,
+.capNotice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.limitNotice {
+  background-color: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
+}
+
+.capNotice {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+/* Grupos */
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.groupTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+}
+
+.badgeGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Envelope do chip + ação de edição (TSK-304 / RN-21) */
+.badgeChipWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Chips de badges */
+.systemBadgeItem,
+.customBadgeItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.systemBadgeItem {
+  background-color: var(--bg-surface);
+}
+
+.customBadgeItem {
+  background-color: rgba(6, 182, 212, 0.1);
+  border-color: rgba(6, 182, 212, 0.35);
+}
+
+.badgeIcon {
+  color: var(--color-primary-400);
+}
+
+.customBadgeIcon {
+  color: var(--color-accent-400);
+}
+
+/* Botão de edição (TSK-304 / SPEC-012) — apenas criador (RN-21). Alvo ≥ 44px. */
+.editBadgeButton {
+  width: var(--touch-target-min, 44px);
+  height: var(--touch-target-min, 44px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  color: var(--text-muted);
+  transition: var(--transition-fast);
+}
+
+.editBadgeButton:hover,
+.editBadgeButton:focus-visible {
+  color: var(--color-primary-400);
+  background-color: var(--bg-surface-elevated);
+}
+
+/* Ações do chip (editar/excluir) — agrupadas ao lado do badge (TSK-304/TSK-305) */
+.badgeChipActions {
+  display: flex;
+  align-items: center;
+}
+
+/* Botão de exclusão (TSK-305 / SPEC-013) — apenas criador (RN-21). Alvo ≥ 44px. */
+.deleteBadgeButton {
+  width: var(--touch-target-min, 44px);
+  height: var(--touch-target-min, 44px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  color: var(--text-muted);
+  transition: var(--transition-fast);
+}
+
+.deleteBadgeButton:hover,
+.deleteBadgeButton:focus-visible {
+  color: #f87171;
+  background-color: rgba(239, 68, 68, 0.15);
+}
+
+/* Botão Novo Badge (apenas criador) — RN-21 / RN-12 */
+.addBadgeButton {
+  min-height: var(--touch-target-min, 44px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px dashed var(--color-primary-500);
+  color: var(--color-primary-400);
+  font-size: 13px;
+  font-weight: 600;
+  transition: var(--transition-fast);
+  align-self: flex-start;
+}
+
+.addBadgeButton:hover {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.addBadgeButton:disabled,
+.addBadgeButtonDisabled {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* Estado sem casa ativa */
+.emptyStateCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 16px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  text-align: center;
+}
+
+.emptyIconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-surface-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyIcon {
+  color: var(--text-muted);
+}
+
+.emptyTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.emptyText {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  max-width: 280px;
+}
+
+/* Estado de carregamento */
+.loadingState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 28px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.spinner {
+  color: var(--color-primary-400);
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

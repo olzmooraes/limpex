@@ -1,6 +1,7 @@
 import React from 'react';
-import { Home, Tags, Plus, Building2, History } from 'lucide-react';
+import { Home, Tags, Plus, Building2, History, LucideIcon } from 'lucide-react';
 import { TabId } from '../../types';
+import { BOTTOM_NAV_ORDER, NavIcon } from '../../services/navConfig';
 import styles from './BottomNavbar.module.css';
 
 interface BottomNavbarProps {
@@ -8,77 +9,63 @@ interface BottomNavbarProps {
   onTabChange: (tab: TabId) => void;
 }
 
+const NAV_ICONS: Record<NavIcon, LucideIcon> = {
+  home: Home,
+  tags: Tags,
+  plus: Plus,
+  building: Building2,
+  history: History
+};
+
+/**
+ * TSK-401 / SPEC-014: Bottom Navigation Bar fixa de 5 posições com botão
+ * central "+ Faxina" elevado. Renderizada a partir da fonte única de verdade
+ * BOTTOM_NAV_ORDER (src/services/navConfig.ts).
+ */
 export const BottomNavbar: React.FC<BottomNavbarProps> = ({
   activeTab,
   onTabChange
 }) => {
   return (
     <nav className={styles.navbar} aria-label="Navegação principal">
-      {/* 1. Início / Semana Vigente */}
-      <button
-        type="button"
-        className={`${styles.navItem} ${activeTab === 'home' ? styles.active : ''}`}
-        onClick={() => onTabChange('home')}
-        aria-label="Início e faxinas da semana"
-      >
-        <div className={styles.iconContainer}>
-          <Home size={20} />
-        </div>
-        <span className={styles.label}>Início</span>
-      </button>
+      {BOTTOM_NAV_ORDER.map((tab) => {
+        const Icon = NAV_ICONS[tab.icon];
+        const isActive = activeTab === tab.id;
 
-      {/* 2. Gestão de Badges */}
-      <button
-        type="button"
-        className={`${styles.navItem} ${activeTab === 'badges' ? styles.active : ''}`}
-        onClick={() => onTabChange('badges')}
-        aria-label="Gestão de badges e tarefas"
-      >
-        <div className={styles.iconContainer}>
-          <Tags size={20} />
-        </div>
-        <span className={styles.label}>Badges</span>
-      </button>
+        if (tab.isCentral) {
+          return (
+            <div key={tab.id} className={styles.centralButtonWrapper}>
+              <button
+                type="button"
+                className={`${styles.centralButton} ${isActive ? styles.centralActive : ''}`}
+                onClick={() => onTabChange(tab.id)}
+                aria-label={tab.ariaLabel}
+                aria-current={isActive ? 'page' : undefined}
+                title="Nova Faxina"
+              >
+                <Icon size={26} strokeWidth={2.5} />
+              </button>
+              <span className={styles.centralLabel}>{tab.label}</span>
+            </div>
+          );
+        }
 
-      {/* 3. Botão Central em Destaque: + Faxina */}
-      <div className={styles.centralButtonWrapper}>
-        <button
-          type="button"
-          className={`${styles.centralButton} ${activeTab === 'new-cleaning' ? styles.centralActive : ''}`}
-          onClick={() => onTabChange('new-cleaning')}
-          aria-label="Registrar nova faxina"
-          title="Nova Faxina"
-        >
-          <Plus size={26} strokeWidth={2.5} />
-        </button>
-        <span className={styles.centralLabel}>+ Faxina</span>
-      </div>
-
-      {/* 4. Criar / Vincular a Casas */}
-      <button
-        type="button"
-        className={`${styles.navItem} ${activeTab === 'houses' ? styles.active : ''}`}
-        onClick={() => onTabChange('houses')}
-        aria-label="Casas e membros"
-      >
-        <div className={styles.iconContainer}>
-          <Building2 size={20} />
-        </div>
-        <span className={styles.label}>Casas</span>
-      </button>
-
-      {/* 5. Histórico Semanal */}
-      <button
-        type="button"
-        className={`${styles.navItem} ${activeTab === 'history' ? styles.active : ''}`}
-        onClick={() => onTabChange('history')}
-        aria-label="Histórico de limpezas"
-      >
-        <div className={styles.iconContainer}>
-          <History size={20} />
-        </div>
-        <span className={styles.label}>Histórico</span>
-      </button>
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            className={`${styles.navItem} ${isActive ? styles.active : ''}`}
+            onClick={() => onTabChange(tab.id)}
+            aria-label={tab.ariaLabel}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            <div className={styles.iconContainer}>
+              <Icon size={20} />
+            </div>
+            <span className={styles.label}>{tab.label}</span>
+          </button>
+        );
+      })}
     </nav>
   );
 };

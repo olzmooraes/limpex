@@ -1,4 +1,4 @@
-import { dbService, isSupabaseConfigured } from './supabase';
+import { dbService } from './supabase';
 import { User } from '../types';
 
 export interface SystemCapacity {

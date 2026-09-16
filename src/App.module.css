@@ -111,14 +111,26 @@
 }
 
 .noteIndicator {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-sm);
   background-color: rgba(6, 182, 212, 0.12);
   color: var(--color-accent-400);
   display: flex;
   align-items: center;
   justify-content: center;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.noteIndicator:hover {
+  background-color: rgba(6, 182, 212, 0.22);
+}
+
+.noteIndicator:active {
+  transform: scale(0.95);
 }
 
 .badgeTags {
@@ -144,8 +156,90 @@
   font-size: 12px;
   font-weight: 600;
   color: var(--color-primary-400);
-  padding: 4px 0;
+  min-height: var(--touch-target-min, 44px);
+  padding: 0;
   align-self: flex-start;
+  transition: color var(--transition-fast);
+}
+
+.expandButton:hover {
+  color: var(--color-primary-300);
+}
+
+/* TSK-404/SPEC-017: Estados de loading e vazio da semana vigente */
+.loadingState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 28px 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.spinner {
+  color: var(--color-primary-400);
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.emptyStateCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 28px 20px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.emptyStateIcon {
+  color: var(--color-accent-400);
+}
+
+.emptyStateText {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.emptyStateHint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--touch-target-min, 44px);
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow-glow);
+  cursor: pointer;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  border: none;
+}
+
+.primaryButton:hover {
+  opacity: 0.92;
+}
+
+.primaryButton:active {
+  transform: scale(0.98);
 }
 
 .notesBox {
@@ -164,47 +258,6 @@
   color: var(--color-accent-400);
   flex-shrink: 0;
   margin-top: 2px;
-}
-
-/* Grid de Badges */
-.badgeGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.systemBadgeItem {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border-radius: var(--radius-full);
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  font-size: 13px;
-  color: var(--text-primary);
-}
-
-.badgeIcon {
-  color: var(--color-primary-400);
-}
-
-.addBadgeButton {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: var(--radius-full);
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px dashed var(--color-primary-500);
-  color: var(--color-primary-400);
-  font-size: 13px;
-  font-weight: 600;
-  transition: var(--transition-fast);
-}
-
-.addBadgeButton:hover {
-  background: rgba(16, 185, 129, 0.2);
 }
 
 /* Formulário de Nova Faxina */
@@ -337,30 +390,45 @@
   border: 1px solid var(--border-focus);
 }
 
-.copyButton {
-  height: 40px;
+.codeActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shareButton {
+  height: 44px;
+  min-width: 44px;
   padding: 0 16px;
   border-radius: var(--radius-sm);
-  background-color: var(--bg-surface-elevated);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+  border: 1px solid var(--color-primary-500);
+  color: #ffffff;
   font-size: 13px;
   font-weight: 600;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+}
+
+.actionIconButton {
+  height: 44px;
+  width: 44px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .inviteNote {
   font-size: 12px;
   color: var(--text-muted);
   line-height: 1.4;
-}
-
-.actionsList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
 }
 
 .secondaryActionButton {
@@ -375,6 +443,279 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+}
+
+/* TSK-203: Aba de Casas (Criar casa / Entrar via código / Lista de casas) */
+.statusBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.statusSuccess {
+  background-color: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: var(--color-primary-400);
+}
+
+.statusError {
+  background-color: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+.houseList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.houseCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+}
+
+.houseCardActive {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.25);
+}
+
+.houseCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.houseCardInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.houseIconWrap {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.houseIcon {
+  color: var(--color-primary-400);
+}
+
+.houseName {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.houseInvite {
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.roleBadge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+}
+
+.roleCreator {
+  background-color: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: var(--color-primary-400);
+}
+
+.roleMember {
+  background-color: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  color: var(--color-accent-400);
+}
+
+/* TSK-205: Exclusão de casa (apenas proprietário) */
+.houseDeleteRow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 10px;
+}
+
+.deleteButton {
+  min-height: var(--touch-target-min, 44px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: var(--color-danger-500);
+  font-size: 13px;
+  font-weight: 600;
+  align-self: flex-start;
+  transition: var(--transition-fast);
+}
+
+.deleteButton:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.deleteConfirmText {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.deleteConfirmActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.deleteCancelButton {
+  min-height: var(--touch-target-min, 44px);
+  flex: 1;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.deleteConfirmButton {
+  min-height: var(--touch-target-min, 44px);
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-danger-500);
+  border: 1px solid var(--color-danger-600);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.deleteConfirmButton:disabled {
+  opacity: 0.6;
+}
+
+.lockNotice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.panelCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+}
+
+.panelTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.panelTitleIcon {
+  color: var(--color-primary-400);
+}
+
+.textInput {
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.textInput:focus {
+  border-color: var(--color-primary-500);
+}
+
+.codeInput {
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  color: var(--color-primary-400);
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.codeInput:focus {
+  border-color: var(--color-primary-500);
+}
+
+.primaryButton {
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: var(--shadow-glow);
 }
 
 /* Histórico Semanal */

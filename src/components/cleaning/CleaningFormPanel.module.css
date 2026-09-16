@@ -1,0 +1,308 @@
+/* TSK-402 / SPEC-015: Painel de Registro de Faxina (aba central "+ Faxina") */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Estados de vazio / carregamento */
+.emptyStateCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 28px 20px;
+  text-align: center;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+  border: 1px dashed var(--border-focus);
+}
+
+.emptyIconWrap {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-surface-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.emptyIcon {
+  color: var(--text-muted);
+}
+
+.emptyTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.emptyText {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  max-width: 260px;
+}
+
+.loadingState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 28px 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.spinner {
+  color: var(--color-primary-400);
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Grupos de formulário */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.labelIcon {
+  color: var(--color-primary-400);
+  flex-shrink: 0;
+}
+
+/* Responsável */
+.responsibleSelect {
+  min-height: var(--touch-target-min, 44px);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  transition: border-color var(--transition-fast);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2340c057' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.responsibleSelect:focus {
+  border-color: var(--color-primary-500);
+}
+
+/* Dia da semana — chips dom..sab (RN-09) */
+.dayPickerRow {
+  display: flex;
+  gap: 6px;
+}
+
+.dayPill {
+  flex: 1;
+  min-height: var(--touch-target-min, 44px);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: var(--transition-fast);
+}
+
+.dayPillActive {
+  background-color: var(--color-primary-500);
+  border-color: var(--color-primary-400);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+/* Badges/tarefas — seleção múltipla (RN-09 / RN-19) */
+.badgePicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badgeChip {
+  min-height: var(--touch-target-min, 44px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: var(--transition-fast);
+}
+
+.badgeChip:active {
+  transform: scale(0.96);
+}
+
+.badgeChipIcon {
+  color: var(--color-accent-400);
+}
+
+.badgeChipSelected {
+  background-color: rgba(16, 185, 129, 0.18);
+  border-color: var(--color-primary-500);
+  color: var(--color-primary-400);
+  font-weight: 600;
+}
+
+.badgeChipSelected .badgeChipIcon {
+  color: var(--color-primary-400);
+}
+
+.noBadgesNotice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Observações */
+.notesLabelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.notesCounter {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.notesCounterOver {
+  color: var(--color-danger-500);
+}
+
+.notesTextarea {
+  min-height: 96px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  outline: none;
+  resize: vertical;
+  transition: border-color var(--transition-fast);
+}
+
+.notesTextarea:focus {
+  border-color: var(--color-primary-500);
+}
+
+.notesTextarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Botão salvar */
+.submitButton {
+  min-height: 50px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: var(--shadow-glow);
+  transition: var(--transition-fast);
+}
+
+.submitButton:active {
+  transform: scale(0.98);
+}
+
+.submitButton:disabled {
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+/* Banner de sucesso de registro */
+.successBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: var(--color-primary-400);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.successBanner strong {
+  display: block;
+  font-weight: 600;
+  color: var(--color-primary-400);
+}
+
+.successBanner span {
+  color: var(--text-secondary);
+}
+
+.successBanner svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Banner de erro de validação */
+.errorBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.fieldHint {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}

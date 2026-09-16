@@ -17,7 +17,7 @@ gantt
     section M2: Casas & Permissões
     Casas, Convite e 1 Casa/Criador :active, m2, 2026-09-13, 3d
     section M3: Badges & Limpeza
-    Badges (máx 34) & Registro Semanal:m3, after m2, 4d
+    Badges (máx 34) & Registro Semanal:active, m3, after m2, 4d
     section M4: Histórico & Auditoria
     Histórico Semanal & Logs Imutáveis:m4, after m3, 3d
     section M5: Homologação PWA
@@ -61,6 +61,9 @@ gantt
   - Restrição única de 1 casa criada por usuário.
   - Geração de código de convite de 6 caracteres e fluxo de adesão por código.
   - Tela/Aba de Casas (Criar, Vincular e Alternar).
+  - Exclusão de casa restrita exclusivamente ao proprietário (TSK-205), com log de auditoria e liberação do `UNIQUE(creator_id)`.
+  - Seletor de casa ativa no topo do aplicativo (TSK-204), alternando entre as casas do usuário em qualquer aba com persistência da escolha.
+  - Runner consolidado de testes do Épico 2 (TSK-206) — 5 gates / 50 cenários de domínio validando o bloqueio da 2ª casa (`HOUSE_LIMIT_REACHED`), convite, multi-casa e exclusão proprietária.
 - **Critério de Aceite**: Usuário não consegue criar mais de 1 casa; consegue participar de múltiplas casas via código de convite.
 
 ---
@@ -68,12 +71,15 @@ gantt
 ### Milestone 3: Sistema de Badges (Máx 34) e Registro de Faxina
 - **Objetivo**: Implementar a gestão de tags e a tela central de registro de faxinas com a navegação fixa inferior.
 - **Entregas**:
-  - Seed automático dos 14 badges do sistema para cada nova casa.
-  - Tela de Gestão de Badges com trava em 20 customizados / 34 totais por casa.
+  - Seed automático dos 14 badges do sistema para cada nova casa (TSK-301 — concluído: fonte única `badgeDefinitions.ts`, trigger `handle_new_house` no banco, seed no mock e teste 10/10 + runner `runEpic3Audit.ts`).
+  - Tela de Gestão de Badges com trava em 20 customizados / 34 totais por casa (TSK-302 concluído — SPEC-010; TSK-303 concluído — SPEC-011: modal de criação `BadgeCreateModal.tsx` com validação `badgeCreation.ts` e trava RN-11/RN-12; TSK-304 concluído — SPEC-012: edição/renomeação de badges `BadgeEditModal.tsx` + `badgeEdit.ts` + `dbService.renameBadge` restrita ao criador via RN-21; TSK-305 concluído — SPEC-013: exclusão de badges `BadgeDeleteModal.tsx` de confirmação destrutiva + `badgeDelete.ts` + `dbService.deleteBadgeWithLog` restrita ao criador via RN-21 com log obrigatório de auditoria RN-15/Restrição nº 5 e isolação RN-19; runner do Épico 3 com 5 gates / 148 testes).
   - Regra RBAC: apenas o criador pode criar, editar ou excluir badges.
-  - Componente Bottom Navbar fixa de 5 posições com botão central "+ Faxina" em destaque.
-  - Modal/Tela de registro de faxina com seleção de responsável, dia, badges e observações.
-  - Tela Principal exibindo as faxinas da semana vigente com cards expansíveis (> 2 itens).
+  - Suíte consolidada do Épico 3 (TSK-306 — concluído): runner `runEpic3Audit.ts` com 5 gates / 148 testes aprovados (100%), validando o teto de 34 badges (Restrição nº 3 / RN-11 e RN-12) e as permissões de criador vs membro (Restrição nº 4 / RN-21) nas camadas de domínio e de serviço.
+  - Componente Bottom Navbar fixa de 5 posições com botão central "+ Faxina" em destaque (TSK-401 concluído — SPEC-014: `navConfig.ts` fonte única de verdade, componente config-driven `BottomNavbar.tsx`, teste 13/13 + Gate 1 de `runEpic4Audit.ts`).
+  - Modal/Tela de registro de faxina com seleção de responsável, dia, badges e observações (TSK-402 concluído — SPEC-015: `cleaningRegistration.ts` camada de domínio RN-09, tela `CleaningFormPanel.tsx` no Item Central da Navbar com responsável/dia pré-selecionados, chips de badges da casa ativa RN-19 e observações `{n}/500`, payload `CleaningRecord` pronto para a TSK-403; teste 37/37 + Gate 2 do runner `runEpic4Audit.ts` com 2 gates / 50 verificações).
+  - Tela Principal exibindo as faxinas da semana vigente com cards expansíveis (> 2 itens) (TSK-404 concluído — SPEC-017: `cleaningWeekView.ts` camada de domínio com contexto semanal determinístico (RN-08/RN-24), cards reais da semana via `getCleaningRecords` + resolução de nomes de badges; teste 39/39 + Gate 4 do runner `runEpic4Audit.ts`).
+  - Micro-animação fluida a 60fps do card expansível para mais de 2 tarefas (TSK-405 concluído — SPEC-018: `cardExpandable.ts` camada de domínio, componente modular `CleaningCard.tsx` com gaveta CSS Grid `0fr ➔ 1fr`, rotação do chevron de 180° em 250ms e gaveta de notas acessível com suporte a `prefers-reduced-motion`; teste 30/30 + Gate 5 do runner `runEpic4Audit.ts` com 5 gates / 169 verificações).
+  - Backend e persistência dos registros de faxina (TSK-403 concluído — SPEC-016: migração `cleaning_persistence_rls` com RLS/triggers RN-19/RN-20 e CHECK de `week_number` 1..4; `dbService.createCleaningRecord` + `dbService.getCleaningRecords` com isolamento RN-19 e filtros por semana; cascata de exclusão de casa/badge com auditoria preservada; ponte `handleSubmitCleaning` → backend no `App.tsx`; teste 50/50 + Gate 3 do runner `runEpic4Audit.ts` com 3 gates / 100 verificações).
 - **Critério de Aceite**: Criador adiciona novos badges até o limite de 34; membros registram faxinas; botão central da navbar abre fluxo de registro com 1 toque.
 
 ---

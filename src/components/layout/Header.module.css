@@ -47,14 +47,24 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+}
+
+.houseSelector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
 }
 
 .houseButton {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
-  height: 36px;
+  padding: 0 12px;
+  height: var(--touch-target-min);
+  min-width: 0;
+  max-width: 200px;
   border-radius: var(--radius-full);
   background-color: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
@@ -71,13 +81,184 @@
 
 .houseIcon {
   color: var(--color-accent-400);
+  flex-shrink: 0;
 }
 
 .houseName {
+  flex-shrink: 1;
+  min-width: 0;
   max-width: 110px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.chevronDown {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.chevronUp {
+  flex-shrink: 0;
+  color: var(--color-primary-400);
+  transform: rotate(180deg);
+  transition: transform var(--transition-fast);
+}
+
+.houseMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 300px;
+  max-width: calc(100vw - 32px);
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 8px;
+  z-index: 60;
+  animation: menuIn var(--transition-fast);
+}
+
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.houseMenuLabel {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  padding: 4px 10px 8px;
+}
+
+.houseMenuList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.houseMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  min-height: 48px;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+  text-align: left;
+  width: 100%;
+}
+
+.houseMenuItem:hover {
+  background-color: rgba(16, 185, 129, 0.08);
+}
+
+.houseMenuItemActive {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.houseMenuIconWrap {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: var(--radius-xs);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.houseMenuIcon {
+  color: var(--color-primary-400);
+}
+
+.houseMenuInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.houseMenuName {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.houseMenuCode {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.roleBadge {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 3px 7px;
+  border-radius: var(--radius-full);
+}
+
+.roleCreator {
+  background-color: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: var(--color-primary-400);
+}
+
+.roleMember {
+  background-color: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  color: var(--color-accent-400);
+}
+
+.activeCheck {
+  flex-shrink: 0;
+  color: var(--color-primary-400);
+}
+
+.manageButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  transition: var(--transition-fast);
+}
+
+.manageButton:hover {
+  color: var(--text-primary);
+  background-color: var(--border-focus);
 }
 
 .logoutButton {

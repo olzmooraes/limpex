@@ -11,7 +11,6 @@ import {
   Eye,
   EyeOff,
   ArrowRight, 
-  CheckCircle2, 
   Loader2,
   Users
 } from 'lucide-react';
