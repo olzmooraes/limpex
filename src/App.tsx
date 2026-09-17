@@ -18,14 +18,10 @@ import { getStoredActiveHouseId, saveActiveHouseId, resolveActiveHouse } from '.
 import { deriveWeekContext, buildCleaningCardView, formatRecordCount } from './services/cleaningWeekView';
 import { 
   Calendar, 
-  FileText, 
-  ChevronDown, 
-  ChevronUp, 
   Plus, 
   Copy, 
   Check, 
   Share2,
-  Info,
   ShieldCheck,
   Building2,
   Lock,

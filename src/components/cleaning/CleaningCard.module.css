@@ -58,33 +58,67 @@
   margin-top: 2px;
 }
 
-/* Indicador tátil de notas */
+/* Indicador tátil de notas (TSK-406 / SPEC-019 / Restrição nº 1) */
 .noteIndicator {
-  width: 36px;
-  height: 36px;
+  position: relative;
+  min-width: var(--touch-target-min, 44px);
+  min-height: var(--touch-target-min, 44px);
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-sm);
   background-color: rgba(6, 182, 212, 0.12);
   color: var(--color-accent-400);
-  display: flex;
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: none;
   cursor: pointer;
   padding: 0;
-  transition: background-color var(--transition-fast), transform var(--transition-fast);
+  transition: all var(--transition-fast);
+  outline: none;
 }
 
 .noteIndicator:hover {
   background-color: rgba(6, 182, 212, 0.22);
+  border-color: rgba(6, 182, 212, 0.45);
+  color: var(--color-accent-300);
 }
 
 .noteIndicator:active {
   transform: scale(0.94);
 }
 
+.noteIndicator:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-accent-500);
+}
+
 .noteIndicatorActive {
-  background-color: rgba(6, 182, 212, 0.26);
+  background: linear-gradient(135deg, var(--color-accent-600), var(--color-accent-500));
+  border-color: transparent;
   color: #ffffff;
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.35);
+}
+
+.noteIndicatorActive:hover {
+  background: linear-gradient(135deg, var(--color-accent-500), var(--color-accent-400));
+  color: #ffffff;
+}
+
+.noteIcon {
+  flex-shrink: 0;
+}
+
+/* Badge dot assinalando a presença de notas anexadas (quando colapsado) */
+.noteDot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-accent-400);
+  box-shadow: 0 0 6px var(--color-accent-500);
+  border: 1.5px solid var(--bg-surface);
 }
 
 /* Lista base de badges */
@@ -214,14 +248,14 @@
 .notesBox {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 10px;
   padding: 10px 12px;
   border-radius: var(--radius-sm);
   background-color: var(--bg-app);
   border-left: 3px solid var(--color-accent-500);
   font-size: 12px;
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: 1.45;
   margin-top: 2px;
 }
 
@@ -233,6 +267,15 @@
 
 .notesText {
   margin: 0;
+  flex: 1;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.notesLabel {
+  color: var(--color-accent-400);
+  font-weight: 600;
 }
 
 /* Respeito à preferência de movimento reduzido (Acessibilidade) */

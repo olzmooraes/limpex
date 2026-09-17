@@ -1,6 +1,7 @@
 import React from 'react';
 import type { CleaningCardView } from '../../services/cleaningWeekView';
 import { deriveCardExpandableState } from '../../services/cardExpandable';
+import { deriveNotesIndicatorState } from '../../services/cleaningNotesIndicator';
 import { ChevronDown, FileText, Info } from 'lucide-react';
 import styles from './CleaningCard.module.css';
 
@@ -11,8 +12,9 @@ export interface CleaningCardProps {
 }
 
 /**
- * TSK-405 / SPEC-018: Componente de Card de Faxina da Semana Vigente
- * com micro-animação fluida a 60fps, gaveta CSS Grid e chevron rotativo.
+ * TSK-405 / TSK-406 / SPEC-018 / SPEC-019: Componente de Card de Faxina da Semana Vigente
+ * com micro-animação fluida a 60fps, gaveta CSS Grid, chevron rotativo e
+ * indicador visual ergonômico de observações/ressalvas (Restrição nº 1 / RN-07).
  */
 export const CleaningCard: React.FC<CleaningCardProps> = ({
   card,
@@ -27,6 +29,7 @@ export const CleaningCard: React.FC<CleaningCardProps> = ({
     collapseLabel,
   } = deriveCardExpandableState(card);
 
+  const notesState = deriveNotesIndicatorState(card.recordId, card.notes, isExpanded);
   const overflowDrawerId = `overflow-drawer-${card.recordId}`;
 
   return (
@@ -41,15 +44,18 @@ export const CleaningCard: React.FC<CleaningCardProps> = ({
           </div>
         </div>
 
-        {card.hasNotes && (
+        {notesState.isVisible && (
           <button
             type="button"
-            className={`${styles.noteIndicator} ${isExpanded ? styles.noteIndicatorActive : ''}`}
-            title="Contém observações adicionais (toque para ver)"
-            aria-label="Ver observações adicionais"
+            className={`${styles.noteIndicator} ${notesState.isActive ? styles.noteIndicatorActive : ''}`}
+            title={notesState.tooltip}
+            aria-label={notesState.ariaLabel}
+            aria-expanded={notesState.isActive}
+            aria-controls={notesState.notesDrawerId}
             onClick={() => onToggleExpand(card.recordId)}
           >
-            <FileText size={16} />
+            <FileText size={18} className={styles.noteIcon} />
+            {notesState.hasDot && <span className={styles.noteDot} aria-hidden="true" />}
           </button>
         )}
       </div>
@@ -98,16 +104,20 @@ export const CleaningCard: React.FC<CleaningCardProps> = ({
         </button>
       )}
 
-      {/* Gaveta Animada da Caixa de Observações */}
-      {card.hasNotes && card.notes && (
+      {/* Gaveta Animada da Caixa de Observações (TSK-406 / SPEC-019) */}
+      {notesState.isVisible && notesState.sanitizedNotes && (
         <div
+          id={notesState.notesDrawerId}
           className={`${styles.notesDrawer} ${isExpanded ? styles.notesDrawerExpanded : ''}`}
           aria-hidden={!isExpanded}
         >
           <div className={styles.notesDrawerInner}>
             <div className={styles.notesBox}>
-              <Info size={14} className={styles.notesIcon} />
-              <p className={styles.notesText}>Obs: {card.notes}</p>
+              <Info size={15} className={styles.notesIcon} />
+              <p className={styles.notesText}>
+                <strong className={styles.notesLabel}>Obs: </strong>
+                {notesState.sanitizedNotes}
+              </p>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 // TSK-404 / SPEC-017: Camada de domínio da tela principal (semana vigente)
 import type { CleaningRecord, Badge, DayOfWeek } from '../types';
 import { WEEKDAY_LABELS, computeRecordWeek, getTodayDayOfWeek } from './cleaningRegistration';
+import { hasValidNotes } from './cleaningNotesIndicator';
 
 export const PT_MONTH_NAMES: readonly string[] = [
   'Janeiro',
@@ -85,7 +86,7 @@ export function buildCleaningCardView(record: CleaningRecord, badges: Badge[]): 
     initials: getInitials(record.userName),
     weekdayLabel: WEEKDAY_LABELS[record.dayOfWeek],
     badgeNames,
-    hasNotes: Boolean(record.notes && record.notes.trim().length > 0),
+    hasNotes: hasValidNotes(record.notes),
     notes: record.notes?.trim() || undefined,
     isExpandable: badgeNames.length > TWO_TASKS_LIMIT,
     overflowCount: Math.max(0, badgeNames.length - TWO_TASKS_LIMIT),

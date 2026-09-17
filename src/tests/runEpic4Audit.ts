@@ -3,6 +3,7 @@ import { runCleaningRegistrationSimulationTest } from './cleaning-registration-t
 import { runCleaningPersistenceSimulationTest } from './cleaning-persistence-tsk403.test';
 import { runHomeWeekSimulationTest } from './home-week-tsk404.test';
 import { runCardExpandableSimulationTest } from './card-expandable-tsk405.test';
+import { runCleaningNotesIndicatorSimulationTest } from './cleaning-notes-indicator-tsk406.test';
 
 export interface Epic4GateResult {
   id: number;
@@ -45,7 +46,12 @@ export interface Epic4AuditReport {
  * - GATE 5: Micro-Animação do Card Expansível (TSK-405 / SPEC-018) — gaveta CSS Grid
  *   suave (0fr ➔ 1fr), rotação do chevron de 180°, rótulos dinâmicos e preferência
  *   de movimento reduzido (RN-07 / Restrição nº 1).
- * Novos gates serão adicionados conforme TSK-406 e TSK-407 forem concluídas.
+ * - GATE 6: Ícone Indicativo Visual de Observações/Ressalvas (TSK-406 / SPEC-019) —
+ *   exibição condicional de ícone no cabeçalho quando há notas (RN-07), sanitização estrita,
+ *   estados colapsado com badge dot e expandido com gaveta de notas, acessibilidade semântica
+ *   (aria-label/controls/expanded), suporte a textos de até 500 caracteres (CLEANING_NOTES_MAX_LENGTH)
+ *   e alvo de toque ergonômico ≥ 44x44px (Restrição nº 1).
+ * O último gate será adicionado conforme TSK-407 for concluída.
  */
 export async function runEpic4Audit(
   onProgress?: (currentGate: number, gateName: string, totalGates: number) => void
@@ -83,6 +89,12 @@ export async function runEpic4Audit(
       name: 'Micro-Animação do Card Expansível (TSK-405)',
       description: 'SPEC-018: expansão suave de cards com mais de 2 tarefas com gaveta CSS Grid (0fr ➔ 1fr), rotação animada do chevron de 180° em 250ms, preservação estrita da ordem dos badges, rótulos dinâmicos singular/plural (+ 1 tarefa vs + N tarefas) e respeito a prefers-reduced-motion (RN-07 / Restrição nº 1).',
       run: runCardExpandableSimulationTest
+    },
+    {
+      id: 6,
+      name: 'Ícone Indicativo Visual de Observações (TSK-406)',
+      description: 'SPEC-019: exibição condicional de ícone FileText no cabeçalho do card quando há notas (RN-07), sanitização estrita, estados colapsado com badge dot e expandido com gaveta de notas, acessibilidade semântica (aria-label/controls/expanded), suporte a textos de até 500 caracteres (CLEANING_NOTES_MAX_LENGTH) e alvo de toque ergonômico ≥ 44x44px (Restrição nº 1).',
+      run: runCleaningNotesIndicatorSimulationTest
     }
   ];
 
