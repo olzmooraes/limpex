@@ -80,9 +80,11 @@ O diretório `.agents/` é o centro de controle da inteligência e governança d
 - **Frontend/Mobile**: React 18 + Vite + TypeScript (PWA), Mobile-First.
 - **Estilos**: CSS Modules com variáveis semânticas de design tokens (`src/styles/tokens.css`), micro-animações táteis.
 - **Backend/Database**: Supabase / PostgreSQL com Row Level Security (RLS) habilitado em todas as tabelas e triggers de validação de teto.
-  - **Estado atual (2026-10-01)**: a camada `src/services/supabase.ts` ainda é um mock em `localStorage`; a migração para o Supabase real é a prioridade do Épico 7.
+  - **Banco**: baseline em `supabase/migrations/` ([SPEC-021](specs/SPEC-021-database-baseline.md)), rodando localmente via Docker (`npm run db:start`). Leitura via RLS; escrita somente por funções RPC.
+  - **Estado atual (2026-10-01)**: o app (`src/services/supabase.ts`) ainda usa um mock em `localStorage`; a conexão ao banco real é a TSK-703.
 - **Fuso horário de negócio**: `America/Sao_Paulo` (horário de Brasília) para toda regra de data/semana.
-- **Testes**: Vitest (`npm test`). Suítes nativas usam o sufixo `*.spec.ts`; regras de domínio têm testes unitários e regras de RLS/limites têm testes de integração contra o banco.
+- **Testes**: Vitest (`npm test`). Suítes nativas usam o sufixo `*.spec.ts`; regras de domínio têm testes unitários.
+  - Regras do banco (triggers, RLS, RPCs, limites) têm testes pgTAP em `supabase/tests/database/` (`npm run test:db`, com o Supabase local rodando).
   - `src/tests/legacy-suites.spec.ts` executa as simulações legadas (`*.test.ts`) contra o mock até que sejam substituídas.
   - Nenhum código de teste pode ser importado por código de produção.
 

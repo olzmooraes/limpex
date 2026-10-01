@@ -16,7 +16,22 @@ npm run typecheck  # checagem de tipos
 npm run build      # build de produção em dist/
 ```
 
-> **Estado atual:** os dados ainda ficam em um mock no `localStorage` do navegador. A migração para o Supabase real está em andamento ([Épico 7](.agents/backlog/backlog.md)).
+### Banco de dados local (Supabase)
+
+Requisitos: Docker Desktop em execução.
+
+```bash
+npm run db:start   # sobe o Supabase local (1ª vez baixa as imagens)
+npm run db:reset   # recria o banco aplicando as migrações de supabase/migrations
+npm run test:db    # testes do banco (pgTAP)
+npm run db:stop    # desliga os contêineres
+```
+
+Com o banco no ar:
+- Studio (painel visual): http://localhost:54323
+- E-mails de teste (ex.: recuperação de senha): http://localhost:54324
+
+> **Estado atual:** o banco já existe ([SPEC-021](.agents/specs/SPEC-021-database-baseline.md)), mas o app ainda usa um mock no `localStorage` do navegador. A conexão do app ao banco é a próxima etapa ([Épico 7](.agents/backlog/backlog.md)).
 
 ---
 

@@ -1,6 +1,7 @@
 # SPEC-009: Modelagem e Seed dos 14 Badges de Sistema Pré-definidos
 
 - **Status**: APPROVED
+- **Atualização 2026-10-01**: a parte de banco de dados desta spec (migrações, RLS, triggers) foi substituída pela baseline da [SPEC-021](SPEC-021-database-baseline.md).
 - **Épico**: [Épico 3 — Gestão de Badges de Tarefas e Limitações](../backlog/backlog.md)
 - **Tarefas**: `TSK-301` (modelo + seed); TSK-303/TSK-305 herdam RN-10 a RN-15
 - **Autor**: Arquiteto AI

@@ -1,6 +1,7 @@
 # SPEC-002: Modelagem e Configuração do Banco Supabase / PostgreSQL
 
 - **Status**: APPROVED
+- **Atualização 2026-10-01**: a parte de banco de dados desta spec (migrações, RLS, triggers) foi substituída pela baseline da [SPEC-021](SPEC-021-database-baseline.md).
 - **Épico**: [[EPIC-1] Fundação, Autenticação e Teto Global de Usuários](../backlog/backlog.md)
 - **Tarefa**: `TSK-102`
 - **Autor**: Arquiteto AI

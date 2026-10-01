@@ -1,6 +1,7 @@
 # SPEC-016: Backend e Persistência dos Registros de Faxina (`cleaning_records` e `cleaning_badges`)
 
 - **Status**: APPROVED
+- **Atualização 2026-10-01**: a parte de banco de dados desta spec (migrações, RLS, triggers) foi substituída pela baseline da [SPEC-021](SPEC-021-database-baseline.md).
 - **Épico**: [EPIC 4 - Registro de Faxina e Tela Principal Semanal](../backlog/backlog.md)
 - **Autor**: Agente AI / Arquiteto
 - **Data de Criação**: 2026-09-15

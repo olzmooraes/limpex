@@ -42,9 +42,9 @@ Este backlog contém todos os épicos, estórias de usuário e tarefas técnicas
 | `TSK-204` | Suporte a múltiplas casas: seletor de casa ativa no topo do aplicativo | `DONE` | P1 | TSK-203 | [SPEC-008](../specs/SPEC-008-houses-members-model.md) · Início: 2026-09-14 |
 | `TSK-205` | Exclusão de casa restrita exclusivamente ao proprietário | `DONE` | P0 | TSK-201 | [SPEC-008](../specs/SPEC-008-houses-members-model.md) · Início: 2026-09-14 · Conclusão: 2026-09-14 |
 | `TSK-206` | Testes de restrição: bloquear criação de 2ª casa pelo mesmo usuário | `DONE` | P0 | TSK-201 | [SPEC-008](../specs/SPEC-008-houses-members-model.md) · Início: 2026-09-14 · Conclusão: 2026-09-14 |
-| `TSK-207` | Saída da casa pelo membro; criador não pode sair (RN-29), com log de auditoria (RN-30) | `TODO` | P1 | TSK-703 | — |
-| `TSK-208` | Remoção de membro pelo criador, com log de auditoria (RN-30) | `TODO` | P1 | TSK-703 | — |
-| `TSK-209` | Gerar novo código de convite, invalidando o anterior (RN-31) | `TODO` | P2 | TSK-703 | — |
+| `TSK-207` | Saída da casa pelo membro; criador não pode sair (RN-29), com log de auditoria (RN-30) | `TODO` | P1 | TSK-703 | banco pronto na TSK-702 ([SPEC-021](../specs/SPEC-021-database-baseline.md)); falta interface |
+| `TSK-208` | Remoção de membro pelo criador, com log de auditoria (RN-30) | `TODO` | P1 | TSK-703 | banco pronto na TSK-702 ([SPEC-021](../specs/SPEC-021-database-baseline.md)); falta interface |
+| `TSK-209` | Gerar novo código de convite, invalidando o anterior (RN-31) | `TODO` | P2 | TSK-703 | banco pronto na TSK-702 ([SPEC-021](../specs/SPEC-021-database-baseline.md)); falta interface |
 
 > **TSK-201 — Concluído em 2026-09-14** · Início: 2026-09-14 · Spec: [SPEC-008](../specs/SPEC-008-houses-members-model.md) · Artefatos: migração [20260913000000_houses_house_members_rls.sql](../../supabase/migrations/20260913000000_houses_house_members_rls.sql), camada de dados `dbService` (createHouse/getUserHouses/getHouseMembers/joinHouseByInviteCode), teste [houses-constraint.test.ts](../../src/tests/houses-constraint.test.ts).
 
@@ -71,7 +71,7 @@ Este backlog contém todos os épicos, estórias de usuário e tarefas técnicas
 | `TSK-304` | Edição de badges (renomear item) permitida apenas para o criador da casa | `DONE` | P1 | TSK-302 | [SPEC-012](../specs/SPEC-012-badges-edit.md) · Início: 2026-09-15 · Conclusão: 2026-09-15 |
 | `TSK-305` | Exclusão de badges permitida apenas para o criador da casa | `DONE` | P0 | TSK-302 | [SPEC-013](../specs/SPEC-013-badges-delete.md) · Início: 2026-09-15 · Conclusão: 2026-09-15 |
 | `TSK-306` | Testes automatizados do teto de 34 badges e permissões de criador vs membro | `DONE` | P0 | TSK-303, TSK-305 | [SPEC-011](../specs/SPEC-011-badges-creation.md) · Início: 2026-09-15 · Conclusão: 2026-09-15 |
-| `TSK-307` | Exclusão lógica de badge: histórico preservado, vínculo removido só na semana atual, faxina "sem tarefas" sinalizada (RN-14 revisada) | `TODO` | P0 | TSK-702 | — |
+| `TSK-307` | Exclusão lógica de badge: histórico preservado, vínculo removido só na semana atual, faxina "sem tarefas" sinalizada (RN-14 revisada) | `TODO` | P0 | TSK-702 | banco pronto na TSK-702 ([SPEC-021](../specs/SPEC-021-database-baseline.md)); falta interface |
 
 > **TSK-301 — Concluído em 2026-09-15** · Início: 2026-09-14 · Spec: [SPEC-009](../specs/SPEC-009-badges-system-seed.md) · Artefatos: fonte única de verdade [badgeDefinitions.ts](../../src/services/badgeDefinitions.ts) (`SYSTEM_BADGE_NAMES` com os 14 nomes na ordem RN-10, `SYSTEM_BADGE_COUNT`=14 / `MAX_CUSTOM_BADGES`=20 / `MAX_TOTAL_BADGES`=34 e `createSystemBadges`), seed do mock em `dbService.createHouse` de [supabase.ts](../../src/services/supabase.ts) + seed inicial do mock, trigger SQL `handle_new_house` com os 14 badges na migração [20260912000000_initial_schema.sql](../../supabase/migrations/20260912000000_initial_schema.sql) e tabela `public.badges` com `UNIQUE(house_id, name)`, teste de domínio **10/10 aprovado** [badges-seed-tsk301.test.ts](../../src/tests/badges-seed-tsk301.test.ts) (Cenários 1-2 da SPEC-009: exatamente 14 badges `isSystem=true` com `displayOrder` 1..14 na ordem RN-10, unicidade por casa e isolamento total entre casas) e runner do Épico 3 `runEpic3Audit.ts` (substituído por [legacy-suites.spec.ts](../../src/tests/legacy-suites.spec.ts) na TSK-701) (Gate 1 aprovado).
 
@@ -100,7 +100,7 @@ Este backlog contém todos os épicos, estórias de usuário e tarefas técnicas
 | `TSK-406` | Ícone indicativo visual para registros que contenham observações/ressalvas | `DONE` | P1 | TSK-404 | [SPEC-019](../specs/SPEC-019-cleaning-notes-indicator.md) · Início: 2026-09-17 · Conclusão: 2026-09-17 |
 | `TSK-407` | Regra de semana dom–sáb no fuso de Brasília (mês da maioria dos dias, "Semana 1..5"), reset semanal da tela principal e bloqueio de datas futuras (RN-08/RN-24 revisadas) | `DONE` | P0 | TSK-404, TSK-701 | [SPEC-020](../specs/SPEC-020-week-rule-and-cleaning-date.md) |
 | `TSK-408` | Registro em datas passadas: opção "Outra data" a partir da criação da casa (RN-09 revisada) | `DONE` | P1 | TSK-407 | [SPEC-020](../specs/SPEC-020-week-rule-and-cleaning-date.md) |
-| `TSK-409` | Edição e exclusão de faxina por quem registrou ou pelo responsável (RN-28) | `TODO` | P1 | TSK-703 | — |
+| `TSK-409` | Edição e exclusão de faxina por quem registrou ou pelo responsável (RN-28) | `TODO` | P1 | TSK-703 | banco pronto na TSK-702 ([SPEC-021](../specs/SPEC-021-database-baseline.md)); falta interface |
 
 > **TSK-401 — Concluído em 2026-09-15** · Início: 2026-09-15 · Spec: [SPEC-014](../specs/SPEC-014-bottom-navbar.md) · Artefatos: fonte única de verdade do modelo de navegação [navConfig.ts](../../src/services/navConfig.ts) (`BOTTOM_NAV_ORDER` com as exatas 5 posições Início · Badges · + Faxina (Central) · Casas · Histórico, `BOTTOM_NAV_POSITIONS`=5, `CENTRAL_TAB`='new-cleaning', `TOUCH_TARGET_MIN`=44, `getNavTabById`/`getNavPosition`), componente **Bottom Navbar config-driven** [BottomNavbar.tsx](../../src/components/layout/BottomNavbar.tsx) + [BottomNavbar.module.css](../../src/components/layout/BottomNavbar.module.css) (5 posições fixas, glassmorphism `backdrop-blur`, botão central "+ Faxina" circular elevado 52x52 com gradiente primário e `shadow-glow`, indicador ativo com micro-animação, `aria-label`/`aria-current`, safe-area bottom e alvos de toque ≥ 44px — Restrição nº 1/RN-06), teste de domínio **13/13 aprovado** [bottom-navbar-tsk401.test.ts](../../src/tests/bottom-navbar-tsk401.test.ts) (Cenários 1-5 da SPEC-014) registrado como **Gate 1** do runner `runEpic4Audit.ts` (substituído por [legacy-suites.spec.ts](../../src/tests/legacy-suites.spec.ts) na TSK-701). Verificação: `tsc` ✓ · `npm run build` ✓ · Auditoria de conformidade `compliance-audit` ✓ (Restrição nº 1 — 5 posições/44px/safe-area; demais restrições não impactadas).
 
@@ -137,12 +137,12 @@ Este backlog contém todos os épicos, estórias de usuário e tarefas técnicas
 
 | ID | Tarefa | Status | Prioridade | Dependência | Spec Relacionada |
 | :--- | :--- | :---: | :---: | :---: | :--- |
-| `TSK-601` | Tabela `exclusion_logs` no banco com regras de imutabilidade (sem update/delete) | `TODO` | P0 | TSK-102 | a criar |
-| `TSK-602` | Trigger/Serviço para gravação automática de log na exclusão de qualquer badge | `TODO` | P0 | TSK-305, TSK-601 | a criar |
-| `TSK-603` | Trigger/Serviço para gravação automática de log na exclusão de qualquer casa | `TODO` | P0 | TSK-205, TSK-601 | a criar |
-| `TSK-604` | Testes automatizados garantindo persistência e fidelidade dos logs de auditoria | `TODO` | P0 | TSK-602, TSK-603 | a criar |
+| `TSK-601` | Tabela `exclusion_logs` no banco com regras de imutabilidade (sem update/delete) | `DONE` | P0 | TSK-102 | feito na TSK-702 ([SPEC-021](../specs/SPEC-021-database-baseline.md)) |
+| `TSK-602` | Trigger/Serviço para gravação automática de log na exclusão de qualquer badge | `DONE` | P0 | TSK-305, TSK-601 | feito na TSK-702 ([SPEC-021](../specs/SPEC-021-database-baseline.md)) |
+| `TSK-603` | Trigger/Serviço para gravação automática de log na exclusão de qualquer casa | `DONE` | P0 | TSK-205, TSK-601 | feito na TSK-702 ([SPEC-021](../specs/SPEC-021-database-baseline.md)) |
+| `TSK-604` | Testes automatizados garantindo persistência e fidelidade dos logs de auditoria | `DONE` | P0 | TSK-602, TSK-603 | feito na TSK-702 ([SPEC-021](../specs/SPEC-021-database-baseline.md)) |
 
-> **Nota (2026-10-01):** hoje o log é gravado pelo cliente no mock. As TSK-601 a TSK-603 serão implementadas como triggers no banco dentro da TSK-702, para que nenhuma exclusão ocorra sem log e nenhum log possa ser forjado pelo cliente.
+> **Nota (2026-10-01):** as TSK-601 a TSK-604 foram resolvidas no banco pela TSK-702. Os logs são gravados pelas RPCs na mesma transação da exclusão, são imutáveis por trigger e cobrem também a saída e a remoção de membros. O app passa a usá-los na TSK-703.
 
 ---
 
@@ -154,7 +154,7 @@ Ordem: TSK-701 → TSK-407 → TSK-702 → TSK-703 → Épicos 5 e 6.
 | ID | Tarefa | Status | Prioridade | Dependência | Spec Relacionada |
 | :--- | :--- | :---: | :---: | :---: | :--- |
 | `TSK-701` | Higiene do repositório: `.gitignore`, `node_modules`/`dist` fora do git, remoção do painel de auditoria in-app, Vitest (`npm test`), links relativos | `DONE` | P0 | Nenhuma | chore · Conclusão: 2026-10-01 |
-| `TSK-702` | Reescrita do schema como baseline limpa: RLS sem recursão (helper `is_house_member`), RPC de entrada por convite, trigger `auth.users → public.users`, teto de 100 no Auth, teto de 34 badges no banco, logs de exclusão por trigger, exclusão lógica de badge, data da faxina como única fonte da semana, UUIDs | `TODO` | P0 | TSK-701 | a criar |
+| `TSK-702` | Reescrita do schema como baseline limpa: RLS sem recursão (helper `is_house_member`), RPC de entrada por convite, trigger `auth.users → public.users`, teto de 100 no Auth, teto de 34 badges no banco, logs de exclusão gravados pelas RPCs, exclusão lógica de badge, data da faxina como única fonte da semana, UUIDs | `DONE` | P0 | TSK-701 | [SPEC-021](../specs/SPEC-021-database-baseline.md) · Conclusão: 2026-10-01 |
 | `TSK-703` | Cliente Supabase real: auth e-mail/senha com recuperação de senha, `dbService` real, remoção do mock em `localStorage`, divisão do `App.tsx` em telas | `TODO` | P0 | TSK-702 | a criar |
 | `TSK-704` | Testes de integração de RLS e limites contra Supabase local (requer Docker Desktop + Supabase CLI) | `TODO` | P0 | TSK-702 | a criar |
 | `TSK-705` | Login com Google OAuth (requer credenciais do Google Cloud Console) | `TODO` | P2 | TSK-703 | a criar |
@@ -162,3 +162,6 @@ Ordem: TSK-701 → TSK-407 → TSK-702 → TSK-703 → Épicos 5 e 6.
 
 > **TSK-701 — Concluída em 2026-10-01.** Repositório passou de 6.152 para 119 arquivos rastreados; painel de auditoria fora do bundle (241,8 kB → 230,6 kB); simulações legadas rodam via [legacy-suites.spec.ts](../../src/tests/legacy-suites.spec.ts); 224 links `file:///` viraram relativos.
 > Verificação: `npm run typecheck` ✓ · `npm test` 20/20 ✓ (a suíte falha se o teto de 34 badges for alterado) · `npm run build` ✓.
+
+> **TSK-702 — Concluída em 2026-10-01.** Baseline em 4 migrações (`supabase/migrations/`), Supabase local via Docker, 13 RPCs com códigos de erro. A camada de banco das TSK-207/208/209/307/409 e das TSK-601 a 604 também ficou pronta.
+> Verificação: `npm run db:reset` ✓ · `npm run test:db` 129/129 ✓ (a suíte falha com a política recursiva antiga) · `supabase db lint` sem avisos · cadastro real pela API do Auth cria perfil, casa e badges.
