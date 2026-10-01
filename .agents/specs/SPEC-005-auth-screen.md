@@ -1,7 +1,7 @@
 # SPEC-005: Tela de Login e Cadastro Mobile-First com Bloqueio de 100 Usuários
 
 - **Status**: APPROVED
-- **Épico**: [[EPIC-1] Fundação, Autenticação e Teto Global de Usuários](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [[EPIC-1] Fundação, Autenticação e Teto Global de Usuários](../backlog/backlog.md)
 - **Tarefa**: `TSK-105`
 - **Autor**: Arquiteto AI
 - **Data de Criação**: 2026-09-12

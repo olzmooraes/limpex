@@ -1,12 +1,12 @@
 # SPEC-018: Card Expansível de Faxina com Micro-Animação
 
 - **Status**: APPROVED
-- **Épico**: [EPIC 4 - Registro de Faxina e Tela Principal Semanal](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [EPIC 4 - Registro de Faxina e Tela Principal Semanal](../backlog/backlog.md)
 - **Autor**: Agente AI / Arquiteto
 - **Data de Criação**: 2026-09-15
 - **Última Atualização**: 2026-09-15
 - **Tarefa Relacionada**: `TSK-405` (dependência: `TSK-404` — cards da semana vigente)
-- **Depende de**: [SPEC-017-home-week-screen.md](file:///c:/projetos/limpex/.agents/specs/SPEC-017-home-week-screen.md) e [SPEC-014-bottom-navbar.md](file:///c:/projetos/limpex/.agents/specs/SPEC-014-bottom-navbar.md)
+- **Depende de**: [SPEC-017-home-week-screen.md](SPEC-017-home-week-screen.md) e [SPEC-014-bottom-navbar.md](SPEC-014-bottom-navbar.md)
 
 ---
 

@@ -1,7 +1,7 @@
 # SPEC-012: Edição de Badges (Renomear)
 
 - **Status**: APPROVED
-- **Épico**: [Épico 3 — Gestão de Badges de Tarefas e Limitações](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [Épico 3 — Gestão de Badges de Tarefas e Limitações](../backlog/backlog.md)
 - **Tarefa**: `TSK-304`
 - **Autor**: Arquiteto AI
 - **Data de Criação**: 2026-09-15
@@ -159,7 +159,7 @@ interface BadgeManagementPanelProps {
 - **Input**: campo único com ícone `Tag`, `maxLength = 40`, live validation com mensagem de erro em vermelho. Pré-preenchido com o nome atual.
 - **Botão Salvar**: desabilitado quando o nome é inválido, vazio, ou idêntico ao nome atual (sem alteração).
 - **Feedback**: spinner durante o submit; fecha o modal em sucesso e recarrega a lista de badges da casa ativa (RN-19).
-- **Touch**: alvos ≥ 44px (`--touch-target-min`), coerentes com [ui-ux-design-tokens.md](file:///c:/projetos/limpex/.agents/references/ui-ux-design-tokens.md).
+- **Touch**: alvos ≥ 44px (`--touch-target-min`), coerentes com [ui-ux-design-tokens.md](../references/ui-ux-design-tokens.md).
 
 ---
 
@@ -181,4 +181,4 @@ interface BadgeManagementPanelProps {
 ## 7. Rastreabilidade
 - **SPEC-012** → **Épico 3** → TSK-304.
 - TSK-302 (SPEC-010) provê a tela de gestão com os chips de badge; TSK-305 (exclusão) e TSK-306 (testes) completam o CRUD.
-- **RN-13, RN-19, RN-21** (ver [business-rules.md](file:///c:/projetos/limpex/.agents/references/business-rules.md)).
+- **RN-13, RN-19, RN-21** (ver [business-rules.md](../references/business-rules.md)).

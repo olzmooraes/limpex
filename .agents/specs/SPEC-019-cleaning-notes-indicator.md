@@ -1,12 +1,12 @@
 # SPEC-019: Ícone Indicativo Visual para Registros com Observações/Ressalvas
 
 - **Status**: APPROVED
-- **Épico**: [EPIC 4 - Registro de Faxina e Tela Principal Semanal](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [EPIC 4 - Registro de Faxina e Tela Principal Semanal](../backlog/backlog.md)
 - **Autor**: Agente AI / Arquiteto Fullstack
 - **Data de Criação**: 2026-09-17
 - **Última Atualização**: 2026-09-17
 - **Tarefa Relacionada**: `TSK-406` (dependência: `TSK-404` — cards da semana vigente)
-- **Depende de**: [SPEC-017-home-week-screen.md](file:///c:/projetos/limpex/.agents/specs/SPEC-017-home-week-screen.md) e [SPEC-018-card-expandable-animation.md](file:///c:/projetos/limpex/.agents/specs/SPEC-018-card-expandable-animation.md)
+- **Depende de**: [SPEC-017-home-week-screen.md](SPEC-017-home-week-screen.md) e [SPEC-018-card-expandable-animation.md](SPEC-018-card-expandable-animation.md)
 
 ---
 

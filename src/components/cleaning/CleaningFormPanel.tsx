@@ -9,14 +9,16 @@ import {
   User,
   CalendarDays
 } from 'lucide-react';
-import { House, HouseMember, Badge, CleaningRecord, User as AppUser, DayOfWeek } from '../../types';
+import { House, HouseMember, Badge, CleaningRecord, User as AppUser } from '../../types';
+import type { IsoDate } from '../../domain/week';
 import {
-  WEEKDAY_ORDER,
   WEEKDAY_LABELS,
   CLEANING_NOTES_MAX_LENGTH,
   CleaningFormDraft,
+  cleaningDateBoundsFor,
   deriveCleaningFormState,
-  getTodayDayOfWeek,
+  deriveWeekdayChips,
+  describeCleaningDate,
   validateCleaningRegistration,
   buildCleaningRecordPayload
 } from '../../services/cleaningRegistration';
@@ -28,14 +30,16 @@ interface CleaningFormPanelProps {
   badges: Badge[] | null;
   isLoading: boolean;
   currentUser: AppUser | null;
+  /** Data de hoje em Brasília (SPEC-020), atualizada à meia-noite pelo App. */
+  today: IsoDate;
   onSubmit: (payload: CleaningRecord) => Promise<void> | void;
 }
 
 /**
- * TSK-402 / SPEC-015: Tela de Registro de Faxina (Item Central da Navbar — aba
- * `new-cleaning`). Formulário mobile-first com responsável (RN-09), dia da semana,
- * seleção múltipla de badges da casa ativa (RN-19) e observações. A persistência
- * real fica a cargo da TSK-403 via onSubmit(payload).
+ * TSK-402 / SPEC-015 + TSK-407/408 / SPEC-020: Tela de Registro de Faxina (Item
+ * Central da Navbar — aba `new-cleaning`). Formulário mobile-first com
+ * responsável (RN-09), data da faxina (chips da semana atual sem dias futuros ou
+ * "Outra data"), seleção múltipla de badges da casa ativa (RN-19) e observações.
  */
 export const CleaningFormPanel: React.FC<CleaningFormPanelProps> = ({
   house,
@@ -43,28 +47,31 @@ export const CleaningFormPanel: React.FC<CleaningFormPanelProps> = ({
   badges,
   isLoading,
   currentUser,
+  today,
   onSubmit
 }) => {
   const [draft, setDraft] = useState<CleaningFormDraft>({
     responsibleMemberId: '',
-    dayOfWeek: 'dom',
+    cleaningDate: today,
     badgeIds: [],
     notes: ''
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lastPayload, setLastPayload] = useState<CleaningRecord | null>(null);
+  const [isOtherDateOpen, setIsOtherDateOpen] = useState(false);
 
   // Re-derivar quando a casa ativa ou a lista de membros muda: responsável =
-  // usuário logado (RN-09) e dia de hoje; preserva seleções já feitas.
+  // usuário logado (RN-09) e data de hoje; preserva seleções já feitas.
   useEffect(() => {
     if (!house || !members || !currentUser) return;
     setDraft((prev) => {
       const responsibleStillValid = members.some((m) => m.userId === prev.responsibleMemberId);
       if (responsibleStillValid) return prev;
-      return deriveCleaningFormState(members, currentUser.id);
+      return deriveCleaningFormState(members, currentUser.id, today);
     });
     setErrorMessage(null);
+    // `today` fica de fora de propósito: a virada do dia não deve descartar o rascunho.
   }, [house, members, currentUser]);
 
   const selectedMember = useMemo(
@@ -72,7 +79,8 @@ export const CleaningFormPanel: React.FC<CleaningFormPanelProps> = ({
     [members, draft.responsibleMemberId]
   );
 
-  const today = useMemo(() => getTodayDayOfWeek(), []);
+  const bounds = useMemo(() => (house ? cleaningDateBoundsFor(house, today) : null), [house, today]);
+  const weekdayChips = useMemo(() => deriveWeekdayChips(today, bounds?.minDate), [today, bounds]);
 
   // Estado vazio: nenhuma casa ativa selecionada (RN-19)
   if (!house) {
@@ -111,15 +119,18 @@ export const CleaningFormPanel: React.FC<CleaningFormPanelProps> = ({
     });
   };
 
-  const selectDay = (day: DayOfWeek) => {
+  const selectDate = (cleaningDate: IsoDate) => {
     setLastPayload(null);
     setErrorMessage(null);
-    setDraft((prev) => ({ ...prev, dayOfWeek: day }));
+    setDraft((prev) => ({ ...prev, cleaningDate }));
   };
 
+  const selectedDate = describeCleaningDate(draft.cleaningDate, today);
+  const savedDate = lastPayload ? describeCleaningDate(lastPayload.cleaningDate, today) : null;
+
   const handleSubmit = () => {
-    if (!currentUser || !house) return;
-    const result = validateCleaningRegistration(draft, members, badges);
+    if (!currentUser || !house || !bounds) return;
+    const result = validateCleaningRegistration(draft, members, badges, bounds);
     if (!result.valid) {
       setErrorMessage(result.message);
       setLastPayload(null);
@@ -159,16 +170,20 @@ export const CleaningFormPanel: React.FC<CleaningFormPanelProps> = ({
       }}
     >
       {/* Feedback de sucesso após a persistência do registro (TSK-403 / SPEC-016) */}
-      {lastPayload && (
+      {lastPayload && savedDate && (
         <div className={styles.successBanner} role="status" aria-live="polite">
           <CheckCircle2 size={18} />
           <div>
-            <strong>Registro de faxina salvo com sucesso.</strong>
+            <strong>Faxina registrada · {savedDate.weekLabel}</strong>
             <span>
-              {lastPayload.userName} · {WEEKDAY_LABELS[lastPayload.dayOfWeek]} ·{' '}
-              {lastPayload.badgeIds.length}{' '}
+              {lastPayload.userName} · {savedDate.longLabel} · {lastPayload.badgeIds.length}{' '}
               {lastPayload.badgeIds.length === 1 ? 'tarefa' : 'tarefas'}
             </span>
+            {!savedDate.isCurrentWeek && (
+              <span className={styles.successNote}>
+                Ela não aparece em Início, que mostra só a semana atual.
+              </span>
+            )}
           </div>
         </div>
       )}
@@ -212,35 +227,76 @@ export const CleaningFormPanel: React.FC<CleaningFormPanelProps> = ({
         )}
       </div>
 
-      {/* -- Dia da Semana (RN-09 §8.2) */}
+      {/* -- Data da Faxina (RN-09 revisada / SPEC-020): semana atual ou "Outra data" */}
       <div className={styles.formGroup}>
         <label className={styles.formLabel} id="cleaning-day-label">
           <CalendarDays size={13} className={styles.labelIcon} />
-          Dia da Semana
+          Dia da Faxina
         </label>
         <div
           className={styles.dayPickerRow}
           role="group"
           aria-labelledby="cleaning-day-label"
         >
-          {WEEKDAY_ORDER.map((day) => {
-            const active = draft.dayOfWeek === day;
+          {weekdayChips.map((chip) => {
+            const active = draft.cleaningDate === chip.date;
+            const unavailable = chip.isFuture || chip.isBeforeHouse;
+            const reason = chip.isFuture
+              ? ' — data futura indisponível'
+              : chip.isBeforeHouse
+                ? ' — anterior à criação da casa'
+                : '';
+            const label = `${WEEKDAY_LABELS[chip.day]}, ${chip.dayOfMonth}${chip.isToday ? ' (hoje)' : ''}${reason}`;
             return (
               <button
-                key={day}
+                key={chip.date}
                 type="button"
-                className={`${styles.dayPill} ${active ? styles.dayPillActive : ''}`}
-                onClick={() => selectDay(day)}
+                className={`${styles.dayPill} ${active ? styles.dayPillActive : ''} ${
+                  unavailable ? styles.dayPillDisabled : ''
+                }`}
+                onClick={() => {
+                  if (!unavailable) selectDate(chip.date);
+                }}
                 aria-pressed={active}
-                aria-label={WEEKDAY_LABELS[day]}
-                title={WEEKDAY_LABELS[day]}
+                aria-disabled={unavailable}
+                aria-label={label}
+                title={label}
               >
-                {day}
+                <span className={styles.dayPillName}>{chip.day}</span>
+                <span className={styles.dayPillNumber}>{chip.dayOfMonth}</span>
+                {chip.isToday && <span className={styles.dayPillToday}>hoje</span>}
               </button>
             );
           })}
         </div>
-        <span className={styles.fieldHint}>Hoje é {WEEKDAY_LABELS[today]} — ajuste se necessário.</span>
+
+        {/* "Outra data" para semanas anteriores (TSK-408): da criação da casa até hoje */}
+        {isOtherDateOpen ? (
+          <input
+            type="date"
+            className={styles.dateInput}
+            aria-label="Outra data da faxina"
+            value={draft.cleaningDate}
+            min={bounds?.minDate}
+            max={bounds?.today}
+            onChange={(e) => {
+              if (e.target.value) selectDate(e.target.value);
+            }}
+          />
+        ) : (
+          <button
+            type="button"
+            className={styles.otherDateButton}
+            onClick={() => setIsOtherDateOpen(true)}
+          >
+            <CalendarDays size={15} />
+            <span>Outra data</span>
+          </button>
+        )}
+
+        <span className={styles.fieldHint}>
+          {selectedDate.longLabel} · {selectedDate.weekLabel}
+        </span>
       </div>
 
       {/* -- Tarefas Realizadas (Badges da casa ativa — RN-09 §8.3) */}

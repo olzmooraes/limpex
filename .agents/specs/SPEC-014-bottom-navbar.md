@@ -1,7 +1,7 @@
 # SPEC-014: Bottom Navigation Bar de 5 Posições com Botão Central "+ Faxina"
 
 - **Status**: IMPLEMENTED
-- **Épico**: [EPIC 4 - Registro de Faxina e Tela Principal Semanal](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [EPIC 4 - Registro de Faxina e Tela Principal Semanal](../backlog/backlog.md)
 - **Autor**: Agente AI / Arquiteto
 - **Data de Criação**: 2026-09-15
 - **Última Atualização**: 2026-09-15

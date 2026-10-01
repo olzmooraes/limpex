@@ -2,6 +2,8 @@
 
 Este documento descreve a modelagem conceitual, relacional e as entidades que compõem o ecossistema do Limpex.
 
+> **Fonte da verdade:** as migrações em [`supabase/migrations/`](../../supabase/migrations/) (baseline da [SPEC-021](../specs/SPEC-021-database-baseline.md)). Este documento é um resumo; em caso de divergência, valem as migrações.
+
 ---
 
 ## 1. Diagrama Entidade-Relacionamento (ERD)
@@ -11,82 +13,87 @@ erDiagram
     USERS ||--o| HOUSES : "cria (máx 1)"
     USERS ||--o{ HOUSE_MEMBERS : "participa como membro"
     HOUSES ||--|{ HOUSE_MEMBERS : "possui membros"
-    HOUSES ||--|{ BADGES : "possui (máx 34)"
+    HOUSES ||--|{ BADGES : "possui (máx 34 ativos)"
     HOUSES ||--o{ CLEANING_RECORDS : "possui faxinas"
-    USERS ||--o{ CLEANING_RECORDS : "executa faxina"
-    CLEANING_RECORDS ||--|{ CLEANING_BADGES : "associa"
+    USERS ||--o{ CLEANING_RECORDS : "executa / registra faxina"
+    CLEANING_RECORDS ||--o{ CLEANING_BADGES : "associa"
     BADGES ||--o{ CLEANING_BADGES : "é associado em"
-    USERS ||--o{ EXCLUSION_LOGS : "autor da exclusão"
 ```
+
+`exclusion_logs` não tem chaves estrangeiras: o log sobrevive à exclusão do que registra.
 
 ---
 
 ## 2. Descrição das Entidades
 
 ### 2.1. `users`
-Armazena o perfil do usuário no aplicativo.
-- `id`: UUID (Primary Key, vinculado a `auth.users`)
-- `name`: TEXT (Nome completo de exibição)
-- `email`: TEXT (E-mail único)
-- `avatar_url`: TEXT (Opcional, foto de perfil do Google ou padrão)
+Perfil público do usuário, criado automaticamente por trigger quando a conta é criada em `auth.users`.
+- `id`: UUID (PK e FK para `auth.users`)
+- `name`: TEXT (1 a 80 caracteres; vem do cadastro, do `full_name` do Google ou do e-mail)
+- `email`: TEXT (único)
+- `avatar_url`: TEXT (opcional, foto do Google)
 - `created_at`: TIMESTAMPTZ
+- *Regra*: no máximo 100 contas, garantido por trigger em `auth.users` (`USERS_CAP_REACHED`).
 
 ### 2.2. `houses`
-Representa uma residência criada no Limpex.
-- `id`: UUID (Primary Key)
-- `name`: TEXT (Nome da casa, ex: "Casa de Praia", "Ap 402")
-- `invite_code`: TEXT (Código de 6 a 8 caracteres, único e indexado)
-- `creator_id`: UUID (Foreign Key para `users`, restrição `UNIQUE` para garantir máx. 1 casa por criador)
-- `created_at`: TIMESTAMPTZ
-- `updated_at`: TIMESTAMPTZ
+- `id`: UUID (PK)
+- `name`: TEXT (1 a 40 caracteres)
+- `invite_code`: TEXT (6 caracteres de `ABCDEFGHJKLMNPQRSTUVWXYZ23456789`, único, gerado no banco; pode ser regenerado pelo criador)
+- `creator_id`: UUID (FK para `users`, `UNIQUE`: no máximo 1 casa por criador)
+- `created_at`, `updated_at`: TIMESTAMPTZ
 
 ### 2.3. `house_members`
-Tabela associativa de relacionamento N:N entre usuários e casas.
-- `id`: UUID (Primary Key)
-- `house_id`: UUID (Foreign Key para `houses`)
-- `user_id`: UUID (Foreign Key para `users`)
-- `role`: TEXT ('CREATOR' ou 'MEMBER')
+Relação N:N entre usuários e casas.
+- `house_id`: UUID (FK para `houses`)
+- `user_id`: UUID (FK para `users`)
+- `role`: TEXT (`CREATOR` ou `MEMBER`)
 - `joined_at`: TIMESTAMPTZ
-- *Constraint*: `UNIQUE(house_id, user_id)`
+- *Constraint*: PK composta `(house_id, user_id)`
 
 ### 2.4. `badges`
-Itens e tarefas de limpeza vinculados a uma casa específica.
-- `id`: UUID (Primary Key)
-- `house_id`: UUID (Foreign Key para `houses`)
-- `name`: TEXT (Ex: "Cozinha", "Banheiro", "Quarto 1")
-- `is_system`: BOOLEAN (True para os 14 padrões; False para customizados)
-- `display_order`: INTEGER (Ordenação visual)
+- `id`: UUID (PK)
+- `house_id`: UUID (FK para `houses`)
+- `name`: TEXT (1 a 40 caracteres; único por casa entre os ativos, sem diferenciar maiúsculas)
+- `is_system`: BOOLEAN (true para os 14 padrões)
+- `display_order`: INTEGER
 - `created_at`: TIMESTAMPTZ
-- *Validação de negócio*: Contagem total por `house_id` $\le 34$; customizados $\le 20$.
+- `deleted_at`: TIMESTAMPTZ (exclusão lógica; badge excluído continua visível no histórico)
+- *Regra*: até 34 ativos por casa, dos quais até 20 customizados (trigger).
 
 ### 2.5. `cleaning_records`
-Registros individuais de faxina executados em uma semana.
-- `id`: UUID (Primary Key)
-- `house_id`: UUID (Foreign Key para `houses`)
-- `user_id`: UUID (Foreign Key para `users`, o responsável que executou a faxina)
-- `registered_by_id`: UUID (Foreign Key para `users`, quem preencheu o registro)
-- `day_of_week`: TEXT ('dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab')
-- `cleaning_date`: DATE (Data real em que a limpeza ocorreu)
-- `week_number`: INTEGER (1 a 4, semana do mês)
-- `month`: INTEGER (1 a 12)
-- `year`: INTEGER (Ex: 2026)
-- `notes`: TEXT (Observações/ressalvas opcionais)
-- `created_at`: TIMESTAMPTZ
+- `id`: UUID (PK)
+- `house_id`: UUID (FK para `houses`)
+- `user_id`: UUID (FK para `users`, o responsável que executou a faxina)
+- `responsible_name`: TEXT (cópia do nome no momento do registro; preserva o histórico de quem saiu da casa)
+- `registered_by_id`: UUID (FK para `users`, quem preencheu o registro)
+- `cleaning_date`: DATE (data civil no horário de Brasília; nunca futura e nunca anterior à criação da casa)
+- `notes`: TEXT (até 500 caracteres)
+- `created_at`, `updated_at`: TIMESTAMPTZ
+- *Regra (SPEC-020)*: `cleaning_date` é a única fonte da verdade. Dia da semana, semana (domingo a sábado), mês e ano são derivados dela, em `src/domain/week.ts` no app e em `public.week_start()` no banco.
 
 ### 2.6. `cleaning_badges`
-Tabela associativa que vincula tarefas executadas a um registro de faxina.
-- `cleaning_record_id`: UUID (Foreign Key para `cleaning_records`)
-- `badge_id`: UUID (Foreign Key para `badges`)
-- *Constraint*: Primary Key composta `(cleaning_record_id, badge_id)`
+- `cleaning_record_id`: UUID (FK para `cleaning_records`)
+- `badge_id`: UUID (FK para `badges`)
+- *Constraint*: PK composta `(cleaning_record_id, badge_id)`
+- *Regra*: novos vínculos só com badges ativos da mesma casa. Ao excluir um badge, só as faxinas da semana atual perdem o vínculo.
 
 ### 2.7. `exclusion_logs`
-Tabela imutável de auditoria de eventos de exclusão.
-- `id`: UUID (Primary Key)
-- `deleted_at`: TIMESTAMPTZ (Data/hora do evento)
-- `user_id`: UUID (Autor da exclusão)
-- `user_name`: TEXT (Nome do autor no momento da exclusão)
-- `entity_type`: TEXT ('HOUSE' ou 'BADGE')
-- `entity_id`: UUID (Identificador do objeto deletado)
-- `entity_name`: TEXT (Nome do objeto deletado)
-- `house_id`: UUID (Casa relacionada)
-- `metadata`: JSONB (Dados adicionais contextuais)
+Log imutável (triggers bloqueiam `UPDATE`, `DELETE` e `TRUNCATE` para qualquer papel). Gravado somente pelas RPCs, na mesma transação da exclusão.
+- `id`: UUID (PK)
+- `deleted_at`: TIMESTAMPTZ (data/hora do evento)
+- `user_id`, `user_name`, `user_email`: autor da ação
+- `entity_type`: TEXT (`HOUSE`, `BADGE` ou `MEMBER`)
+- `entity_id`, `entity_name`: o que foi excluído (para `MEMBER`, o usuário que saiu ou foi removido)
+- `house_id`: UUID (casa relacionada)
+- `metadata`: JSONB
+  - `HOUSE`: contagens afetadas
+  - `BADGE`: vínculos removidos e preservados
+  - `MEMBER`: ação `LEAVE` ou `REMOVE`
+- `created_at`: TIMESTAMPTZ
+
+---
+
+## 3. Acesso
+
+- **Leitura:** via RLS, apenas membros da casa. Perfis: o próprio ou de quem divide alguma casa.
+- **Escrita:** somente pelas funções RPC listadas na [SPEC-021 §5](../specs/SPEC-021-database-baseline.md). Os papéis `anon` e `authenticated` não têm `INSERT`/`UPDATE`/`DELETE` em nenhuma tabela.

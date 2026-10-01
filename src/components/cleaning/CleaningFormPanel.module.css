@@ -130,11 +130,81 @@
   transition: var(--transition-fast);
 }
 
+.dayPill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 6px 0;
+}
+
+.dayPillName {
+  font-size: 11px;
+  line-height: 1.1;
+}
+
+.dayPillNumber {
+  font-size: 15px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.dayPillToday {
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--color-primary-400);
+}
+
 .dayPillActive {
   background-color: var(--color-primary-500);
   border-color: var(--color-primary-400);
   color: #ffffff;
   box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+.dayPillActive .dayPillToday {
+  color: #ffffff;
+}
+
+/* SPEC-020 Cenário 9: dias futuros indisponíveis */
+.dayPillDisabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+/* SPEC-020 Cenário 11 (TSK-408): "Outra data" */
+.otherDateButton {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--touch-target-min, 44px);
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid var(--border-focus);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  transition: var(--transition-fast);
+}
+
+.otherDateButton:active {
+  transform: scale(0.97);
+}
+
+.dateInput {
+  min-height: var(--touch-target-min, 44px);
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-focus);
+  color: var(--text-primary);
+  font-size: 16px; /* ≥ 16px evita o zoom automático do iOS no foco */
+  color-scheme: dark;
 }
 
 /* Badges/tarefas — seleção múltipla (RN-09 / RN-19) */
@@ -284,6 +354,12 @@
 .successBanner svg {
   flex-shrink: 0;
   margin-top: 2px;
+}
+
+.successBanner .successNote {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-warning-500);
 }
 
 /* Banner de erro de validação */

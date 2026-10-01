@@ -1,7 +1,7 @@
 # SPEC-001: Scaffold do Projeto Frontend Mobile-First & Layout Shell
 
 - **Status**: APPROVED
-- **Épico**: [[EPIC-1] Fundação, Autenticação e Teto Global de Usuários](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [[EPIC-1] Fundação, Autenticação e Teto Global de Usuários](../backlog/backlog.md)
 - **Tarefa**: `TSK-101`
 - **Autor**: Arquiteto AI
 - **Data de Criação**: 2026-09-12

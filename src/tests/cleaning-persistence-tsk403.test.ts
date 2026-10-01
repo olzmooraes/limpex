@@ -86,7 +86,7 @@ export async function runCleaningPersistenceSimulationTest(): Promise<{
 
     const draftValid = {
       responsibleMemberId: USER_MEMBER,
-      dayOfWeek: 'qua',
+      cleaningDate: '2026-09-16',
       badgeIds: [badgesA[0].id, badgesA[1].id],
       notes: 'Limpeza geral de quarta'
     } as CleaningFormDraft;
@@ -127,10 +127,7 @@ export async function runCleaningPersistenceSimulationTest(): Promise<{
       [recordA.userId === USER_MEMBER, 'userId deve ser o responsável'],
       [recordA.userName === 'Membro A', 'userName deve ser resolvido do membro'],
       [recordA.registeredById === USER_CREATOR, 'registeredById deve ser o solicitante'],
-      [recordA.dayOfWeek === 'qua', 'dayOfWeek deve refletir o dia selecionado'],
       [recordA.cleaningDate === '2026-09-16', 'cleaningDate deve ser a data real da faxina'],
-      [recordA.weekNumber >= 1 && recordA.weekNumber <= 4, 'weekNumber deve estar entre 1 e 4'],
-      [recordA.month === 9 && recordA.year === 2026, 'month/year devem ser derivados da data'],
       [recordA.badgeIds.length === 2 && recordA.badgeIds.includes(badgesA[0].id) && recordA.badgeIds.includes(badgesA[1].id), 'badgeIds deve refletir as associações cleaning_badges'],
       [recordA.notes === 'Limpeza geral de quarta', 'notas devem ser preservadas'],
       [Boolean(recordA.id) && Boolean(recordA.createdAt), 'id/createdAt devem ser gerados']
@@ -170,13 +167,13 @@ export async function runCleaningPersistenceSimulationTest(): Promise<{
 
     // --- Cenário 2: consulta isolada e filtro por semana (RN-19) ----------------------
     const pWeek2 = makePayload(
-      { responsibleMemberId: USER_CREATOR, dayOfWeek: 'ter', badgeIds: [badgesA[2].id], notes: '' },
+      { responsibleMemberId: USER_CREATOR, cleaningDate: '2026-09-08', badgeIds: [badgesA[2].id], notes: '' },
       { houseId: houseA.id, members: membersA, registeredById: USER_CREATOR, now: new Date(2026, 8, 8) } // terça-feira da semana 2
     );
 
     // Garante semana diferente: força metadados manuais para a casa B
     const pHouseB: CleaningRecord = makePayload(
-      { responsibleMemberId: USER_OUTSIDER, dayOfWeek: 'sex', badgeIds: [badgesB[0].id], notes: 'Faxina da casa B' },
+      { responsibleMemberId: USER_OUTSIDER, cleaningDate: '2026-09-18', badgeIds: [badgesB[0].id], notes: 'Faxina da casa B' },
       { houseId: houseB.id, members: await dbService.getHouseMembers(houseB.id), registeredById: USER_OUTSIDER, now: new Date(2026, 8, 18) }
     );
 
@@ -192,7 +189,7 @@ export async function runCleaningPersistenceSimulationTest(): Promise<{
     const allOfB = await dbService.getCleaningRecords(houseB.id);
     assert(allOfB.length === 1 && allOfB[0].houseId === houseB.id, 'Cenário 2: casa B deveria ter apenas seu próprio registro', { allOfB });
 
-    const weekFiltered = await dbService.getCleaningRecords(houseA.id, { year: 2026, month: 9, weekNumber: pWeek2.weekNumber });
+    const weekFiltered = await dbService.getCleaningRecords(houseA.id, { from: '2026-09-06', to: '2026-09-12' }); // semana de 08/09 (SPEC-020)
     assert(weekFiltered.length === 1 && weekFiltered[0].id === pWeek2.id, 'Cenário 2: filtro de semana deveria retornar apenas a semana solicitada', { weekFiltered });
 
     const userFiltered = await dbService.getCleaningRecords(houseA.id, { userId: USER_MEMBER });

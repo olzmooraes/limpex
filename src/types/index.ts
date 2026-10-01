@@ -48,11 +48,9 @@ export interface CleaningRecord {
   userId: string;
   userName: string;
   registeredById: string;
-  dayOfWeek: DayOfWeek;
-  cleaningDate: string; // ISO AAAA-MM-DD
-  weekNumber: number; // 1 a 4
-  month: number; // 1 a 12
-  year: number;
+  // Data civil da faxina (AAAA-MM-DD, horário de Brasília) — fonte única:
+  // dia da semana, semana, mês e ano são derivados (SPEC-020).
+  cleaningDate: string;
   badgeIds: string[];
   notes?: string;
   createdAt: string;

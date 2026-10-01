@@ -1,5 +1,11 @@
 # Esquema e Contrato de Dados: Logs de Exclusão (Audit Logs)
 
+> **Atualização 2026-10-01 (SPEC-021):** a fonte da verdade é a baseline em [`supabase/migrations/`](../../supabase/migrations/). Diferenças em relação a este template:
+> - `entity_type` inclui `MEMBER` (saída e remoção de membro);
+> - `user_id` não tem FK, para o log sobreviver à exclusão da conta;
+> - a imutabilidade é feita por triggers que **falham** (`EXCLUSION_LOG_IMMUTABLE`), e não por regras que ignoram em silêncio;
+> - logs são gravados apenas pelas RPCs.
+
 Este documento define o contrato estrito para os logs de auditoria gerados sempre que uma **casa** ou um **badge** for excluído no Limpex.
 
 ---

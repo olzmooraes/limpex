@@ -1,7 +1,7 @@
 # SPEC-007: Testes Automatizados E2E da Barreira de 100 Usuários e Homologação do Épico 1
 
 - **Status**: APPROVED
-- **Épico**: [[EPIC-1] Fundação, Autenticação e Teto Global de Usuários](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [[EPIC-1] Fundação, Autenticação e Teto Global de Usuários](../backlog/backlog.md)
 - **Tarefa**: `TSK-107`
 - **Autor**: Arquiteto AI
 - **Data de Criação**: 2026-09-12

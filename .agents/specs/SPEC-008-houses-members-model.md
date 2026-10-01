@@ -1,7 +1,8 @@
 # SPEC-008: Modelagem e Migração de `houses` e `house_members`
 
 - **Status**: APPROVED
-- **Épico**: [[EPIC-2] Gestão de Casas, Membros e Permissões](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Atualização 2026-10-01**: a parte de banco de dados desta spec (migrações, RLS, triggers) foi substituída pela baseline da [SPEC-021](SPEC-021-database-baseline.md).
+- **Épico**: [[EPIC-2] Gestão de Casas, Membros e Permissões](../backlog/backlog.md)
 - **Tarefas**: `TSK-201` (base), os demais itens do Épico 2 herdam este modelo
 - **Autor**: Arquiteto AI
 - **Data de Criação**: 2026-09-14

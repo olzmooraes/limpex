@@ -1,12 +1,13 @@
 # SPEC-017: Tela Principal — Cards de Faxinas Realizadas na Semana Vigente
 
 - **Status**: APPROVED
-- **Épico**: [EPIC 4 - Registro de Faxina e Tela Principal Semanal](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [EPIC 4 - Registro de Faxina e Tela Principal Semanal](../backlog/backlog.md)
 - **Autor**: Agente AI / Arquiteto
 - **Data de Criação**: 2026-09-15
 - **Última Atualização**: 2026-09-15
 - **Tarefa Relacionada**: `TSK-404` (dependência: `TSK-403` — persistência e `getCleaningRecords`)
-- **Depende de**: [SPEC-016-cleaning-persistence.md](file:///c:/projetos/limpex/.agents/specs/SPEC-016-cleaning-persistence.md) e [SPEC-014-bottom-navbar.md](file:///c:/projetos/limpex/.agents/specs/SPEC-014-bottom-navbar.md)
+- **Depende de**: [SPEC-016-cleaning-persistence.md](SPEC-016-cleaning-persistence.md) e [SPEC-014-bottom-navbar.md](SPEC-014-bottom-navbar.md)
+- **Atualização 2026-10-01**: o cálculo de semana desta spec (`computeRecordWeek`, filtros `year/month/weekNumber`) foi substituído pela [SPEC-020](SPEC-020-week-rule-and-cleaning-date.md): semana de domingo a sábado em Brasília, consulta por intervalo de datas.
 
 > **Escopo da TSK-404**: substituir o bloco *demo* hardcoded da aba **Início** (Item 1 da
 > Navbar) por cards reais alimentados por `dbService.getCleaningRecords(activeHouse.id,

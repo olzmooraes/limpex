@@ -4,7 +4,6 @@ import { MobileContainer } from './components/layout/MobileContainer';
 import { Header } from './components/layout/Header';
 import { BottomNavbar } from './components/layout/BottomNavbar';
 import { AuthScreen } from './components/auth/AuthScreen';
-import { AuditModal } from './components/dev/AuditModal';
 import { BadgeManagementPanel } from './components/badges/BadgeManagementPanel';
 import { BadgeCreateModal } from './components/badges/BadgeCreateModal';
 import { BadgeEditModal } from './components/badges/BadgeEditModal';
@@ -15,14 +14,14 @@ import { authService } from './services/authService';
 import { dbService } from './services/supabase';
 import { MAX_TOTAL_BADGES } from './services/badgeDefinitions';
 import { getStoredActiveHouseId, saveActiveHouseId, resolveActiveHouse } from './services/houseSelection';
-import { deriveWeekContext, buildCleaningCardView, formatRecordCount } from './services/cleaningWeekView';
+import { buildCleaningCardView, formatRecordCount } from './services/cleaningWeekView';
+import { useCurrentWeek } from './hooks/useCurrentWeek';
 import { 
   Calendar, 
   Plus, 
   Copy, 
   Check, 
   Share2,
-  ShieldCheck,
   Building2,
   Lock,
   LogIn,
@@ -42,7 +41,6 @@ export const App: React.FC = () => {
   const [housesMessage, setHousesMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
-  const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [housePendingDelete, setHousePendingDelete] = useState<string | null>(null);
   const [isDeletingHouse, setIsDeletingHouse] = useState(false);
   const [houseBadges, setHouseBadges] = useState<Badge[] | null>(null);
@@ -55,6 +53,8 @@ export const App: React.FC = () => {
   const [isCreateBadgeModalOpen, setIsCreateBadgeModalOpen] = useState(false);
   const [editingBadge, setEditingBadge] = useState<Badge | null>(null);
   const [deletingBadge, setDeletingBadge] = useState<Badge | null>(null);
+  // TSK-407/SPEC-020: semana vigente e "hoje" em Brasília, atualizados à meia-noite
+  const weekContext = useCurrentWeek();
 
   // Carregar sessão existente ao iniciar
   useEffect(() => {
@@ -117,8 +117,9 @@ export const App: React.FC = () => {
     };
   }, [activeHouse]);
 
-  // TSK-404/SPEC-017: Carregar faxinas da semana vigente da casa ativa (RN-06/RN-08/RN-19)
-  // Recarrega ao trocar de casa ou após um novo registro (homeRefreshNonce).
+  // TSK-404/SPEC-017 + TSK-407/SPEC-020: Carregar faxinas da semana vigente (domingo a
+  // sábado, Brasília) da casa ativa (RN-06/RN-08/RN-19). Recarrega ao trocar de casa,
+  // após um novo registro (homeRefreshNonce) e na virada da semana.
   useEffect(() => {
     if (!activeHouse) {
       setWeeklyRecords(null);
@@ -127,16 +128,17 @@ export const App: React.FC = () => {
     }
     let cancelled = false;
     setWeeklyLoading(true);
-    const { weekNumber, month, year } = deriveWeekContext(new Date());
-    dbService.getCleaningRecords(activeHouse.id, { year, month, weekNumber }).then((records) => {
-      if (cancelled) return;
-      setWeeklyRecords(records);
-      setWeeklyLoading(false);
-    });
+    dbService
+      .getCleaningRecords(activeHouse.id, { from: weekContext.start, to: weekContext.end })
+      .then((records) => {
+        if (cancelled) return;
+        setWeeklyRecords(records);
+        setWeeklyLoading(false);
+      });
     return () => {
       cancelled = true;
     };
-  }, [activeHouse, homeRefreshNonce]);
+  }, [activeHouse, homeRefreshNonce, weekContext.start, weekContext.end]);
 
   const refreshUserHouses = async (userId: string): Promise<House[]> => {
     const houses = await dbService.getUserHouses(userId);
@@ -307,14 +309,13 @@ export const App: React.FC = () => {
   const handleSubmitCleaning = async (payload: CleaningRecord): Promise<void> => {
     const res = await dbService.createCleaningRecord(payload);
     if (!res.success) {
-      throw new Error(res.errorCode || 'Falha ao persistir o registro de faxina.');
+      throw new Error(res.error || res.errorCode || 'Falha ao persistir o registro de faxina.');
     }
     // TSK-404/SPEC-017: nova faxina entra imediatamente na lista da semana vigente (RN-06/RN-08)
     setHomeRefreshNonce((n) => n + 1);
   };
 
   // TSK-404/SPEC-017: Cards da semana vigente derivados dos registros + badges da casa ativa
-  const weekContext = deriveWeekContext(new Date());
   const weeklyCards = useMemo(
     () => (weeklyRecords ?? []).map((record) => buildCleaningCardView(record, houseBadges ?? [])),
     [weeklyRecords, houseBadges]
@@ -325,38 +326,6 @@ export const App: React.FC = () => {
     return (
       <MobileContainer>
         <AuthScreen onAuthSuccess={(user) => setCurrentUser(user)} />
-        
-        {/* Botão Flutuante de Auditoria do Épico 1 */}
-        <button
-          type="button"
-          onClick={() => setIsAuditModalOpen(true)}
-          style={{
-            position: 'absolute',
-            bottom: '12px',
-            right: '12px',
-            padding: '6px 12px',
-            borderRadius: '9999px',
-            background: 'rgba(30, 41, 59, 0.9)',
-            border: '1px solid rgba(16, 185, 129, 0.4)',
-            color: '#10b981',
-            fontSize: '11px',
-            fontWeight: 600,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-            zIndex: 99
-          }}
-          title="Auditar Barreira de 100 Usuários"
-        >
-          <ShieldCheck size={14} />
-          <span>Auditar 100 Users</span>
-        </button>
-
-        <AuditModal 
-          isOpen={isAuditModalOpen} 
-          onClose={() => setIsAuditModalOpen(false)} 
-        />
       </MobileContainer>
     );
   }
@@ -370,38 +339,6 @@ export const App: React.FC = () => {
         onSelectHouse={handleSelectHouse}
         onManageHouses={() => setActiveTab('houses')}
         onLogout={handleLogout}
-      />
-
-      {/* Botão Flutuante de Auditoria do Épico 1 */}
-      <button
-        type="button"
-        onClick={() => setIsAuditModalOpen(true)}
-        style={{
-          position: 'absolute',
-          top: '68px',
-          right: '12px',
-          padding: '4px 10px',
-          borderRadius: '9999px',
-          background: 'rgba(30, 41, 59, 0.9)',
-          border: '1px solid rgba(16, 185, 129, 0.4)',
-          color: '#10b981',
-          fontSize: '11px',
-          fontWeight: 600,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '5px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-          zIndex: 40
-        }}
-        title="Auditar Barreira de 100 Usuários"
-      >
-        <ShieldCheck size={13} />
-        <span>Auditoria</span>
-      </button>
-
-      <AuditModal 
-        isOpen={isAuditModalOpen} 
-        onClose={() => setIsAuditModalOpen(false)} 
       />
 
       {/* Área de Conteúdo com Rolagem Touch */}
@@ -419,7 +356,7 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            {weekContext && <p className={styles.helperText}>{weekContext.weekLabel}</p>}
+            <p className={styles.helperText}>{weekContext.label}</p>
 
             {!activeHouse ? (
               <p className={styles.helperText}>
@@ -512,6 +449,7 @@ export const App: React.FC = () => {
               badges={houseBadges}
               isLoading={badgesLoading || membersLoading}
               currentUser={currentUser}
+              today={weekContext.today}
               onSubmit={handleSubmitCleaning}
             />
           </div>

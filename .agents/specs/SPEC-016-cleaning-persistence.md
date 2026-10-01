@@ -1,12 +1,13 @@
 # SPEC-016: Backend e Persistência dos Registros de Faxina (`cleaning_records` e `cleaning_badges`)
 
 - **Status**: APPROVED
-- **Épico**: [EPIC 4 - Registro de Faxina e Tela Principal Semanal](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Atualização 2026-10-01**: a parte de banco de dados desta spec (migrações, RLS, triggers) foi substituída pela baseline da [SPEC-021](SPEC-021-database-baseline.md).
+- **Épico**: [EPIC 4 - Registro de Faxina e Tela Principal Semanal](../backlog/backlog.md)
 - **Autor**: Agente AI / Arquiteto
 - **Data de Criação**: 2026-09-15
 - **Última Atualização**: 2026-09-15
 - **Tarefa Relacionada**: `TSK-403` (dependência: `TSK-402` — formulário e payload)
-- **Depende de**: [SPEC-015-cleaning-registration-screen.md](file:///c:/projetos/limpex/.agents/specs/SPEC-015-cleaning-registration-screen.md) e [SPEC-002-database-schema-supabase.md](file:///c:/projetos/limpex/.agents/specs/SPEC-002-database-schema-supabase.md)
+- **Depende de**: [SPEC-015-cleaning-registration-screen.md](SPEC-015-cleaning-registration-screen.md) e [SPEC-002-database-schema-supabase.md](SPEC-002-database-schema-supabase.md)
 
 ---
 

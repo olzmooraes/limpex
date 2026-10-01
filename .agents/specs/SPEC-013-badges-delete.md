@@ -1,7 +1,7 @@
 # SPEC-013: Exclusão de Badges
 
 - **Status**: APPROVED
-- **Épico**: [Épico 3 — Gestão de Badges de Tarefas e Limitações](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [Épico 3 — Gestão de Badges de Tarefas e Limitações](../backlog/backlog.md)
 - **Tarefa**: `TSK-305`
 - **Autor**: Arquiteto AI
 - **Data de Criação**: 2026-09-15
@@ -148,7 +148,7 @@ interface BadgeManagementPanelProps {
 - **Modal bottom-sheet de confirmação**: overlay com blur, conteúdo centralizado, cabeçalho "Excluir Badge" com ícone de alerta, corpo com o nome do badge em destaque e texto explicativo sobre irreversibilidade e auditoria.
 - **Ações**: botão "Cancelar" (primário neutro) e botão "Excluir" (destrutivo vermelho, ≥ 44px, com spinner durante o submit).
 - **Feedback**: em sucesso fecha o modal e recarrega a lista de badges da casa ativa (RN-19); em erro exibe mensagem no próprio modal.
-- **Touch**: alvos ≥ 44px (`--touch-target-min`), coerentes com [ui-ux-design-tokens.md](file:///c:/projetos/limpex/.agents/references/ui-ux-design-tokens.md).
+- **Touch**: alvos ≥ 44px (`--touch-target-min`), coerentes com [ui-ux-design-tokens.md](../references/ui-ux-design-tokens.md).
 
 ---
 
@@ -170,4 +170,4 @@ interface BadgeManagementPanelProps {
 ## 7. Rastreabilidade
 - **SPEC-013** → **Épico 3** → TSK-305.
 - TSK-302 (SPEC-010) provê a tela de gestão com os chips de badge; TSK-304 (SPEC-012) a edição; TSK-306 agrega a suíte de testes do Épico 3.
-- **RN-11, RN-12, RN-14, RN-15, RN-19, RN-21** (ver [business-rules.md](file:///c:/projetos/limpex/.agents/references/business-rules.md)).
+- **RN-11, RN-12, RN-14, RN-15, RN-19, RN-21** (ver [business-rules.md](../references/business-rules.md)).

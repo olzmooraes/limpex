@@ -13,11 +13,11 @@ Esta skill orienta o processo de transformar itens do backlog ou ideias em espec
 ## Procedimento de Execução
 
 ### Passo 1: Obter Contexto do Item
-1. Localize o item em [.agents/backlog/backlog.md](file:///c:/projetos/limpex/.agents/backlog/backlog.md).
-2. Verifique os pré-requisitos, regras de negócio em [.agents/references/business-rules.md](file:///c:/projetos/limpex/.agents/references/business-rules.md) e modelos em [.agents/references/domain-model.md](file:///c:/projetos/limpex/.agents/references/domain-model.md).
+1. Localize o item em [.agents/backlog/backlog.md](../../backlog/backlog.md).
+2. Verifique os pré-requisitos, regras de negócio em [.agents/references/business-rules.md](../../references/business-rules.md) e modelos em [.agents/references/domain-model.md](../../references/domain-model.md).
 
 ### Passo 2: Criar o Arquivo de Especificação
-1. Crie um novo arquivo em `.agents/specs/SPEC-<NUMERO>-<nome-da-feature>.md` usando o modelo padrão [.agents/templates/feature-spec-template.md](file:///c:/projetos/limpex/.agents/templates/feature-spec-template.md).
+1. Crie um novo arquivo em `.agents/specs/SPEC-<NUMERO>-<nome-da-feature>.md` usando o modelo padrão [.agents/templates/feature-spec-template.md](../../templates/feature-spec-template.md).
 2. Preencha detalhadamente:
    - **Objetivo & Contexto**: Problema que resolve.
    - **Regras de Negócio Envolvidas**: Quais limites ou permissões são impactados.
@@ -31,4 +31,4 @@ Esta skill orienta o processo de transformar itens do backlog ou ideias em espec
 2. Atualize o status do item no backlog para `SPEC_APPROVED`.
 
 ### Passo 4: Transição para Código
-1. Após a spec estar completa, proceda com o workflow [.agents/workflows/feature-lifecycle.md](file:///c:/projetos/limpex/.agents/workflows/feature-lifecycle.md).
+1. Após a spec estar completa, proceda com o workflow [.agents/workflows/feature-lifecycle.md](../../workflows/feature-lifecycle.md).

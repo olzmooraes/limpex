@@ -12,7 +12,7 @@ Esta skill padroniza o ciclo de vida dos itens do backlog do Limpex, assegurando
 
 ## Ciclo de Estados de um Item
 
-Todo item no [.agents/backlog/backlog.md](file:///c:/projetos/limpex/.agents/backlog/backlog.md) segue os estados:
+Todo item no [.agents/backlog/backlog.md](../../backlog/backlog.md) segue os estados:
 
 ```
 [BACKLOG] ➔ [TODO] ➔ [SPEC_DRAFTING] ➔ [SPEC_APPROVED] ➔ [IN_PROGRESS] ➔ [REVIEW/TESTING] ➔ [DONE]
@@ -32,13 +32,13 @@ Todo item no [.agents/backlog/backlog.md](file:///c:/projetos/limpex/.agents/bac
 ## Procedimento de Execução
 
 ### 1. Iniciar Trabalho em um Item
-1. Abra [.agents/backlog/backlog.md](file:///c:/projetos/limpex/.agents/backlog/backlog.md).
+1. Abra [.agents/backlog/backlog.md](../../backlog/backlog.md).
 2. Verifique se as dependências do item estão `DONE`.
 3. Altere o status da tarefa para `IN_PROGRESS`.
 4. Inclua data/hora de início e referência da spec.
 
 ### 2. Concluir Trabalho em um Item
 1. Certifique-se de que os testes automatizados correspondentes foram executados e passaram.
-2. Certifique-se de que a auditoria de conformidade com [.agents/skills/compliance-audit/SKILL.md](file:///c:/projetos/limpex/.agents/skills/compliance-audit/SKILL.md) foi realizada.
+2. Certifique-se de que a auditoria de conformidade com [.agents/skills/compliance-audit/SKILL.md](../compliance-audit/SKILL.md) foi realizada.
 3. Atualize o status da tarefa no backlog para `DONE` com a data de conclusão e links para os artefatos/arquivos gerados.
-4. Verifique o impacto no [.agents/backlog/development_plan.md](file:///c:/projetos/limpex/.agents/backlog/development_plan.md).
+4. Verifique o impacto no [.agents/backlog/development_plan.md](../../backlog/development_plan.md).

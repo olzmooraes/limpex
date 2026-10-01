@@ -6,7 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "test:db": "supabase test db"
   },
   "dependencies": {
     "lucide-react": "^0.475.0",
@@ -14,10 +21,14 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@types/node": "^22.20.4",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^26.1.0",
+    "supabase": "^2.119.0",
     "typescript": "^5.7.3",
-    "vite": "^6.1.0"
+    "vite": "^6.1.0",
+    "vitest": "^3.2.7"
   }
 }
