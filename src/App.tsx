@@ -14,7 +14,8 @@ import { authService } from './services/authService';
 import { dbService } from './services/supabase';
 import { MAX_TOTAL_BADGES } from './services/badgeDefinitions';
 import { getStoredActiveHouseId, saveActiveHouseId, resolveActiveHouse } from './services/houseSelection';
-import { deriveWeekContext, buildCleaningCardView, formatRecordCount } from './services/cleaningWeekView';
+import { buildCleaningCardView, formatRecordCount } from './services/cleaningWeekView';
+import { useCurrentWeek } from './hooks/useCurrentWeek';
 import { 
   Calendar, 
   Plus, 
@@ -52,6 +53,8 @@ export const App: React.FC = () => {
   const [isCreateBadgeModalOpen, setIsCreateBadgeModalOpen] = useState(false);
   const [editingBadge, setEditingBadge] = useState<Badge | null>(null);
   const [deletingBadge, setDeletingBadge] = useState<Badge | null>(null);
+  // TSK-407/SPEC-020: semana vigente e "hoje" em Brasília, atualizados à meia-noite
+  const weekContext = useCurrentWeek();
 
   // Carregar sessão existente ao iniciar
   useEffect(() => {
@@ -114,8 +117,9 @@ export const App: React.FC = () => {
     };
   }, [activeHouse]);
 
-  // TSK-404/SPEC-017: Carregar faxinas da semana vigente da casa ativa (RN-06/RN-08/RN-19)
-  // Recarrega ao trocar de casa ou após um novo registro (homeRefreshNonce).
+  // TSK-404/SPEC-017 + TSK-407/SPEC-020: Carregar faxinas da semana vigente (domingo a
+  // sábado, Brasília) da casa ativa (RN-06/RN-08/RN-19). Recarrega ao trocar de casa,
+  // após um novo registro (homeRefreshNonce) e na virada da semana.
   useEffect(() => {
     if (!activeHouse) {
       setWeeklyRecords(null);
@@ -124,16 +128,17 @@ export const App: React.FC = () => {
     }
     let cancelled = false;
     setWeeklyLoading(true);
-    const { weekNumber, month, year } = deriveWeekContext(new Date());
-    dbService.getCleaningRecords(activeHouse.id, { year, month, weekNumber }).then((records) => {
-      if (cancelled) return;
-      setWeeklyRecords(records);
-      setWeeklyLoading(false);
-    });
+    dbService
+      .getCleaningRecords(activeHouse.id, { from: weekContext.start, to: weekContext.end })
+      .then((records) => {
+        if (cancelled) return;
+        setWeeklyRecords(records);
+        setWeeklyLoading(false);
+      });
     return () => {
       cancelled = true;
     };
-  }, [activeHouse, homeRefreshNonce]);
+  }, [activeHouse, homeRefreshNonce, weekContext.start, weekContext.end]);
 
   const refreshUserHouses = async (userId: string): Promise<House[]> => {
     const houses = await dbService.getUserHouses(userId);
@@ -304,14 +309,13 @@ export const App: React.FC = () => {
   const handleSubmitCleaning = async (payload: CleaningRecord): Promise<void> => {
     const res = await dbService.createCleaningRecord(payload);
     if (!res.success) {
-      throw new Error(res.errorCode || 'Falha ao persistir o registro de faxina.');
+      throw new Error(res.error || res.errorCode || 'Falha ao persistir o registro de faxina.');
     }
     // TSK-404/SPEC-017: nova faxina entra imediatamente na lista da semana vigente (RN-06/RN-08)
     setHomeRefreshNonce((n) => n + 1);
   };
 
   // TSK-404/SPEC-017: Cards da semana vigente derivados dos registros + badges da casa ativa
-  const weekContext = deriveWeekContext(new Date());
   const weeklyCards = useMemo(
     () => (weeklyRecords ?? []).map((record) => buildCleaningCardView(record, houseBadges ?? [])),
     [weeklyRecords, houseBadges]
@@ -352,7 +356,7 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            {weekContext && <p className={styles.helperText}>{weekContext.weekLabel}</p>}
+            <p className={styles.helperText}>{weekContext.label}</p>
 
             {!activeHouse ? (
               <p className={styles.helperText}>
@@ -445,6 +449,7 @@ export const App: React.FC = () => {
               badges={houseBadges}
               isLoading={badgesLoading || membersLoading}
               currentUser={currentUser}
+              today={weekContext.today}
               onSubmit={handleSubmitCleaning}
             />
           </div>

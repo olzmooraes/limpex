@@ -40,7 +40,9 @@ export const CleaningCard: React.FC<CleaningCardProps> = ({
           <div className={styles.avatar}>{card.initials}</div>
           <div>
             <h2 className={styles.userName}>{card.userName}</h2>
-            <span className={styles.cleaningDay}>{card.weekdayLabel}</span>
+            <span className={styles.cleaningDay}>
+              {card.weekdayLabel} · {card.dateLabel}
+            </span>
           </div>
         </div>
 

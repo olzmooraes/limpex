@@ -1,39 +1,46 @@
-import { Badge, CleaningRecord, DayOfWeek, HouseMember } from '../types';
+import { Badge, CleaningRecord, DayOfWeek, House, HouseMember } from '../types';
+import {
+  IsoDate,
+  WEEKDAY_ORDER,
+  businessDateOf,
+  dateOfWeekday,
+  formatLongDate,
+  isAfter,
+  todayInBusinessTz,
+  weekOf
+} from '../domain/week';
+
+export { WEEKDAY_ORDER, WEEKDAY_LABELS } from '../domain/week';
 
 /**
- * TSK-402 / SPEC-015: Camada de domínio do Registro de Faxina (Item Central da Navbar).
- * Cobre RN-09 (responsável, dia da semana, badges, observações), RN-20 (qualquer
- * membro pode registrar) e RN-19 (isolamento por casa ativa). A persistência em
- * banco é responsabilidade da TSK-403; aqui são gerados a validação e o payload.
+ * TSK-402 / SPEC-015 + TSK-407/408 / SPEC-020: Camada de domínio do Registro de
+ * Faxina (Item Central da Navbar). Cobre RN-09 (responsável, data, badges,
+ * observações), RN-20 (qualquer membro pode registrar) e RN-19 (isolamento por
+ * casa ativa). A data da faxina é a única fonte da verdade: dia da semana e
+ * semana são sempre derivados dela.
  */
-
-/** Ordem canônica dos dias da semana (RN-07/RESTRIÇÃO de exibição: dom..sab). */
-export const WEEKDAY_ORDER: DayOfWeek[] = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
-
-/** Rótulos legíveis dos dias (ex.: "Quinta-feira") para exibição mobile. */
-export const WEEKDAY_LABELS: Record<DayOfWeek, string> = {
-  dom: 'Domingo',
-  seg: 'Segunda-feira',
-  ter: 'Terça-feira',
-  qua: 'Quarta-feira',
-  qui: 'Quinta-feira',
-  sex: 'Sexta-feira',
-  sab: 'Sábado'
-};
 
 /** Limite de caracteres do campo Observações (SPEC-015 §3 Cenário 7). */
 export const CLEANING_NOTES_MAX_LENGTH = 500;
 
 export interface CleaningFormDraft {
   responsibleMemberId: string;
-  dayOfWeek: DayOfWeek;
+  cleaningDate: IsoDate;
   badgeIds: string[];
   notes: string;
 }
 
+/** Intervalo permitido para a data da faxina (RN-09 revisada). */
+export interface CleaningDateBounds {
+  today: IsoDate;
+  minDate: IsoDate;
+}
+
 export type CleaningValidationErrorCode =
   | 'CLEANING_RESPONSIBLE_REQUIRED'
-  | 'CLEANING_DAY_REQUIRED'
+  | 'CLEANING_DATE_REQUIRED'
+  | 'CLEANING_DATE_IN_FUTURE'
+  | 'CLEANING_DATE_BEFORE_HOUSE'
   | 'CLEANING_MIN_BADGES'
   | 'CLEANING_BADGE_NOT_IN_HOUSE'
   | 'CLEANING_NOTES_TOO_LONG';
@@ -43,39 +50,92 @@ export type CleaningValidationResult =
   | { valid: false; errorCode: CleaningValidationErrorCode; message: string };
 
 /**
- * Dia da semana corrente a partir de uma data (RN-09: pré-seleção do dia atual).
- * JS getDay(): 0=Domingo .. 6=Sábado → index direto em WEEKDAY_ORDER.
+ * Datas permitidas: da criação da casa até hoje, ambas em Brasília. Se o relógio
+ * do dispositivo estiver atrasado em relação à criação, o mínimo é hoje.
  */
-export function getTodayDayOfWeek(now: Date = new Date()): DayOfWeek {
-  return WEEKDAY_ORDER[now.getDay()] ?? 'dom';
+export function cleaningDateBoundsFor(
+  house: House,
+  today: IsoDate = todayInBusinessTz()
+): CleaningDateBounds {
+  const created = businessDateOf(house.createdAt);
+  return { today, minDate: isAfter(created, today) ? today : created };
 }
 
 /**
- * RN-09 / SPEC-015 §3 Cenários 1 e 2: deriva o estado inicial do formulário —
- * responsável pré-selecionado com o usuário autenticado (se membro da casa) e
- * dia da semana pré-selecionado com o dia atual.
+ * RN-09: estado inicial do formulário — responsável pré-selecionado com o
+ * usuário autenticado (se membro da casa) e data de hoje.
  */
 export function deriveCleaningFormState(
   members: HouseMember[],
   currentUserId: string,
-  now: Date = new Date()
+  today: IsoDate
 ): CleaningFormDraft {
   const isMember = members.some((m) => m.userId === currentUserId);
   return {
     responsibleMemberId: isMember ? currentUserId : (members[0]?.userId ?? ''),
-    dayOfWeek: getTodayDayOfWeek(now),
+    cleaningDate: today,
     badgeIds: [],
     notes: ''
   };
 }
 
+export interface WeekdayChip {
+  day: DayOfWeek;
+  date: IsoDate;
+  /** Dia do mês com 2 dígitos ("28"), pois a semana pode cruzar meses. */
+  dayOfMonth: string;
+  isToday: boolean;
+  isFuture: boolean;
+  isBeforeHouse: boolean;
+}
+
 /**
- * SPEC-015 §3 Cenários 5, 6 e 7: validação do formulário contra a casa ativa.
+ * SPEC-020 Cenário 9: chips dom..sab da semana atual. Dias futuros e dias
+ * anteriores à criação da casa (minDate) ficam indisponíveis (RN-09).
  */
+export function deriveWeekdayChips(today: IsoDate, minDate?: IsoDate): WeekdayChip[] {
+  const week = weekOf(today);
+  return WEEKDAY_ORDER.map((day) => {
+    const date = dateOfWeekday(day, week);
+    return {
+      day,
+      date,
+      dayOfMonth: date.slice(8, 10),
+      isToday: date === today,
+      isFuture: isAfter(date, today),
+      isBeforeHouse: minDate !== undefined && isAfter(minDate, date)
+    };
+  });
+}
+
+/** SPEC-020 Cenário 11: descrição da data escolhida e da semana a que pertence. */
+export function describeCleaningDate(
+  date: IsoDate,
+  today: IsoDate
+): { longLabel: string; weekLabel: string; isCurrentWeek: boolean } {
+  const week = weekOf(date);
+  return {
+    longLabel: formatLongDate(date),
+    weekLabel: week.label,
+    isCurrentWeek: week.start === weekOf(today).start
+  };
+}
+
+function isValidDate(value: string): boolean {
+  try {
+    weekOf(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** SPEC-015 §3 Cenários 5-7 e SPEC-020 Cenários 10-12: validação contra a casa ativa. */
 export function validateCleaningRegistration(
   draft: CleaningFormDraft,
   members: HouseMember[],
-  badges: Badge[]
+  badges: Badge[],
+  bounds: CleaningDateBounds
 ): CleaningValidationResult {
   if (draft.responsibleMemberId && !members.some((m) => m.userId === draft.responsibleMemberId)) {
     return {
@@ -91,11 +151,25 @@ export function validateCleaningRegistration(
       message: 'Nenhum membro está vinculado à casa para ser o responsável.'
     };
   }
-  if (!WEEKDAY_ORDER.includes(draft.dayOfWeek)) {
+  if (!isValidDate(draft.cleaningDate)) {
     return {
       valid: false,
-      errorCode: 'CLEANING_DAY_REQUIRED',
-      message: 'Selecione o dia da semana em que a faxina foi realizada.'
+      errorCode: 'CLEANING_DATE_REQUIRED',
+      message: 'Selecione a data em que a faxina foi realizada.'
+    };
+  }
+  if (isAfter(draft.cleaningDate, bounds.today)) {
+    return {
+      valid: false,
+      errorCode: 'CLEANING_DATE_IN_FUTURE',
+      message: 'Não é possível registrar uma faxina em uma data futura.'
+    };
+  }
+  if (isAfter(bounds.minDate, draft.cleaningDate)) {
+    return {
+      valid: false,
+      errorCode: 'CLEANING_DATE_BEFORE_HOUSE',
+      message: 'A data da faxina não pode ser anterior à criação da casa.'
     };
   }
   if (draft.badgeIds.length === 0) {
@@ -124,31 +198,6 @@ export function validateCleaningRegistration(
   return { valid: true };
 }
 
-/** Data real (AAA-MM-DD) do dia da semana selecionado na semana corrente. */
-export function dateForWeekday(dayOfWeek: DayOfWeek, now: Date): Date {
-  const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const diff = WEEKDAY_ORDER.indexOf(dayOfWeek) - base.getDay();
-  base.setDate(base.getDate() + diff);
-  return base;
-}
-
-/** Formata uma data como AAAA-MM-DD usando componentes locais (evita deslocamento UTC). */
-export function formatIsoDate(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
-/**
- * Metadados da semana do registro (domain-model §2.5): week 1..4 do mês,
- * mês 1..12 e ano. Regra determinística: teto(day/7) limitado a 4.
- */
-export function computeRecordWeek(date: Date): { weekNumber: number; month: number; year: number } {
-  const weekNumber = Math.max(1, Math.min(4, Math.ceil(date.getDate() / 7)));
-  return { weekNumber, month: date.getMonth() + 1, year: date.getFullYear() };
-}
-
 export interface BuildCleaningRecordPayloadOptions {
   houseId: string;
   members: HouseMember[];
@@ -157,16 +206,14 @@ export interface BuildCleaningRecordPayloadOptions {
 }
 
 /**
- * SPEC-015 §3 Cenário 4: monta o payload `CleaningRecord` completo a partir do
- * formulário validado. O objeto fica pronto para ser persistido pela TSK-403.
+ * SPEC-015 §3 Cenário 4 / SPEC-020 §4.2: monta o payload `CleaningRecord` a
+ * partir do formulário validado. Grava apenas a data civil da faxina.
  */
 export function buildCleaningRecordPayload(
   draft: CleaningFormDraft,
   opts: BuildCleaningRecordPayloadOptions
 ): CleaningRecord {
   const now = opts.now ?? new Date();
-  const cleaningDate = dateForWeekday(draft.dayOfWeek, now);
-  const { weekNumber, month, year } = computeRecordWeek(cleaningDate);
   const responsible = opts.members.find((m) => m.userId === draft.responsibleMemberId);
   const trimmedNotes = draft.notes.trim();
 
@@ -176,11 +223,7 @@ export function buildCleaningRecordPayload(
     userId: draft.responsibleMemberId,
     userName: responsible?.userName ?? draft.responsibleMemberId,
     registeredById: opts.registeredById,
-    dayOfWeek: draft.dayOfWeek,
-    cleaningDate: formatIsoDate(cleaningDate),
-    weekNumber,
-    month,
-    year,
+    cleaningDate: draft.cleaningDate,
     badgeIds: [...draft.badgeIds],
     notes: trimmedNotes ? trimmedNotes : undefined,
     createdAt: now.toISOString()

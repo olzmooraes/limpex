@@ -65,13 +65,10 @@ Registros individuais de faxina executados em uma semana.
 - `house_id`: UUID (Foreign Key para `houses`)
 - `user_id`: UUID (Foreign Key para `users`, o responsável que executou a faxina)
 - `registered_by_id`: UUID (Foreign Key para `users`, quem preencheu o registro)
-- `day_of_week`: TEXT ('dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab')
-- `cleaning_date`: DATE (Data real em que a limpeza ocorreu)
-- `week_number`: INTEGER (1 a 4, semana do mês)
-- `month`: INTEGER (1 a 12)
-- `year`: INTEGER (Ex: 2026)
+- `cleaning_date`: DATE (Data civil da faxina, no horário de Brasília; nunca futura e nunca anterior à criação da casa)
 - `notes`: TEXT (Observações/ressalvas opcionais)
 - `created_at`: TIMESTAMPTZ
+- *Regra (SPEC-020)*: `cleaning_date` é a única fonte da verdade. Dia da semana, semana (domingo a sábado), mês e ano são derivados dela em `src/domain/week.ts`. As colunas antigas `day_of_week`, `week_number`, `month` e `year` foram removidas do modelo; a migração do banco é feita na TSK-702.
 
 ### 2.6. `cleaning_badges`
 Tabela associativa que vincula tarefas executadas a um registro de faxina.

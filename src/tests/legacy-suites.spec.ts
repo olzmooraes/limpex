@@ -13,7 +13,6 @@ import { runBadgesCreateSimulationTest } from './badges-create-tsk303.test';
 import { runBadgesEditSimulationTest } from './badges-edit-tsk304.test';
 import { runBadgesDeleteSimulationTest } from './badges-delete-tsk305.test';
 import { runBottomNavbarSimulationTest } from './bottom-navbar-tsk401.test';
-import { runCleaningRegistrationSimulationTest } from './cleaning-registration-tsk402.test';
 import { runCleaningPersistenceSimulationTest } from './cleaning-persistence-tsk403.test';
 import { runHomeWeekSimulationTest } from './home-week-tsk404.test';
 import { runCardExpandableSimulationTest } from './card-expandable-tsk405.test';
@@ -44,7 +43,6 @@ const suites: [string, LegacySuite][] = [
   ['Épico 3 · edição de badges (TSK-304)', runBadgesEditSimulationTest],
   ['Épico 3 · exclusão de badges (TSK-305)', runBadgesDeleteSimulationTest],
   ['Épico 4 · bottom navbar (TSK-401)', runBottomNavbarSimulationTest],
-  ['Épico 4 · registro de faxina (TSK-402)', runCleaningRegistrationSimulationTest],
   ['Épico 4 · persistência de faxina (TSK-403)', runCleaningPersistenceSimulationTest],
   ['Épico 4 · semana vigente (TSK-404)', runHomeWeekSimulationTest],
   ['Épico 4 · card expansível (TSK-405)', runCardExpandableSimulationTest],

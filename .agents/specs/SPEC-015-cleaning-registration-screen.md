@@ -153,7 +153,9 @@ export function buildCleaningRecordPayload(
 
 ## 6. Plano de Testes
 
-- **Testes Unitários / Domínio** (`src/tests/cleaning-registration-tsk402.test.ts`):
+> **Atualização 2026-10-01 (SPEC-020):** a suíte legada `cleaning-registration-tsk402.test.ts` foi portada para [cleaningRegistration.spec.ts](../../src/services/cleaningRegistration.spec.ts). As verificações de `getTodayDayOfWeek`, `CLEANING_DAY_REQUIRED` e `computeRecordWeek` foram substituídas pelas regras de data da [SPEC-020](SPEC-020-week-rule-and-cleaning-date.md).
+
+- **Testes Unitários / Domínio** (`src/tests/cleaning-registration-tsk402.test.ts`, substituído):
   - `getTodayDayOfWeek` mapeia corretamente domingo (0) a sábado (6).
   - `deriveCleaningFormState` pré-seleciona usuário logado como responsável e o dia atual.
   - Validação: sucesso (≥1 badge), `CLEANING_MIN_BADGES`, `CLEANING_RESPONSIBLE_REQUIRED`, `CLEANING_DAY_REQUIRED`, `CLEANING_NOTES_TOO_LONG`, `CLEANING_BADGE_NOT_IN_HOUSE`.

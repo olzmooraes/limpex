@@ -7,6 +7,7 @@
 - **Última Atualização**: 2026-09-15
 - **Tarefa Relacionada**: `TSK-404` (dependência: `TSK-403` — persistência e `getCleaningRecords`)
 - **Depende de**: [SPEC-016-cleaning-persistence.md](SPEC-016-cleaning-persistence.md) e [SPEC-014-bottom-navbar.md](SPEC-014-bottom-navbar.md)
+- **Atualização 2026-10-01**: o cálculo de semana desta spec (`computeRecordWeek`, filtros `year/month/weekNumber`) foi substituído pela [SPEC-020](SPEC-020-week-rule-and-cleaning-date.md): semana de domingo a sábado em Brasília, consulta por intervalo de datas.
 
 > **Escopo da TSK-404**: substituir o bloco *demo* hardcoded da aba **Início** (Item 1 da
 > Navbar) por cards reais alimentados por `dbService.getCleaningRecords(activeHouse.id,

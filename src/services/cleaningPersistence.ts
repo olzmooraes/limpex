@@ -1,10 +1,12 @@
 import { CleaningRecord, House, HouseMember, Badge } from '../types';
+import { isAfter, todayInBusinessTz } from '../domain/week';
 
 export type CleaningPersistenceErrorCode =
   | 'CLEANING_HOUSE_NOT_FOUND'
   | 'CLEANING_MEMBERSHIP_REQUIRED'
   | 'CLEANING_RESPONSIBLE_NOT_IN_HOUSE'
-  | 'CLEANING_BADGE_NOT_IN_HOUSE';
+  | 'CLEANING_BADGE_NOT_IN_HOUSE'
+  | 'CLEANING_DATE_IN_FUTURE';
 
 export interface CleaningPersistenceCheck {
   valid: boolean;
@@ -19,7 +21,9 @@ export const CLEANING_PERSISTENCE_ERROR_MESSAGES: Record<CleaningPersistenceErro
   CLEANING_RESPONSIBLE_NOT_IN_HOUSE:
     'CLEANING_RESPONSIBLE_NOT_IN_HOUSE: o responsável selecionado não é membro da casa ativa (RN-19).',
   CLEANING_BADGE_NOT_IN_HOUSE:
-    'CLEANING_BADGE_NOT_IN_HOUSE: um dos badges selecionados não pertence à casa ativa (RN-19).'
+    'CLEANING_BADGE_NOT_IN_HOUSE: um dos badges selecionados não pertence à casa ativa (RN-19).',
+  CLEANING_DATE_IN_FUTURE:
+    'CLEANING_DATE_IN_FUTURE: não é possível registrar uma faxina em uma data futura (RN-09).'
 };
 
 /**
@@ -33,12 +37,14 @@ export const CLEANING_PERSISTENCE_ERROR_MESSAGES: Record<CleaningPersistenceErro
  * 2. Solicitante (registeredById) deve ser membro da casa (CLEANING_MEMBERSHIP_REQUIRED).
  * 3. Responsável (userId) deve ser membro da casa (CLEANING_RESPONSIBLE_NOT_IN_HOUSE).
  * 4. Todos os badges devem pertencer à casa ativa (CLEANING_BADGE_NOT_IN_HOUSE).
+ * 5. A data não pode ser futura em Brasília (CLEANING_DATE_IN_FUTURE — SPEC-020).
  */
 export function validateCleaningPersistence(
   record: CleaningRecord,
   house: House | null,
   members: HouseMember[],
-  badges: Badge[]
+  badges: Badge[],
+  today: string = todayInBusinessTz()
 ): CleaningPersistenceCheck {
   const scopedMembers = members.filter((m) => m.houseId === record.houseId);
   const scopedBadgeIds = new Set(
@@ -75,6 +81,14 @@ export function validateCleaningPersistence(
       valid: false,
       errorCode: 'CLEANING_BADGE_NOT_IN_HOUSE',
       errorMessage: CLEANING_PERSISTENCE_ERROR_MESSAGES.CLEANING_BADGE_NOT_IN_HOUSE
+    };
+  }
+
+  if (isAfter(record.cleaningDate, today)) {
+    return {
+      valid: false,
+      errorCode: 'CLEANING_DATE_IN_FUTURE',
+      errorMessage: CLEANING_PERSISTENCE_ERROR_MESSAGES.CLEANING_DATE_IN_FUTURE
     };
   }
 

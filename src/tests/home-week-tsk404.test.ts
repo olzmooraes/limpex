@@ -10,7 +10,6 @@ import {
   formatRecordCount,
   TWO_TASKS_LIMIT,
 } from '../services/cleaningWeekView';
-import { WEEKDAY_ORDER } from '../services/cleaningRegistration';
 import { SYSTEM_BADGE_COUNT } from '../services/badgeDefinitions';
 
 /**
@@ -72,14 +71,14 @@ export async function runHomeWeekSimulationTest(): Promise<{
     assert(badgesB.length === SYSTEM_BADGE_COUNT, `Casa B deveria ter ${SYSTEM_BADGE_COUNT} badges`, { len: badgesB.length });
 
     // 3. Cenário 1: contexto semanal determinístico (RN-08/RN-24)
-    const now = new Date(2026, 8, 16); // quarta-feira, 2026-09-16
+    const now = new Date('2026-09-16T15:00:00Z'); // quarta-feira, 16/09/2026 12:00 em Brasília
     const ctx = deriveWeekContext(now);
-    assert(ctx.weekNumber === 3 && ctx.month === 9 && ctx.year === 2026,
-      'Cenário 1: deriveWeekContext deveria derivar semana 3 de setembro de 2026', { ctx });
-    assert(ctx.weekLabel === 'Semana 3 de Setembro de 2026',
-      'Cenário 1: rótulo da semana deveria seguir o formato RN-24', { label: ctx.weekLabel });
-    assert(ctx.todayDayOfWeek === WEEKDAY_ORDER[new Date(2026, 8, 16).getDay()],
-      'Cenário 1: dia atual deveria ser ' + WEEKDAY_ORDER[new Date(2026, 8, 16).getDay()], { today: ctx.todayDayOfWeek });
+    assert(ctx.number === 3 && ctx.month === 9 && ctx.year === 2026 && ctx.start === '2026-09-13' && ctx.end === '2026-09-19',
+      'Cenário 1: deriveWeekContext deveria derivar a semana 13/09 a 19/09 (Semana 3 de Setembro de 2026)', { ctx });
+    assert(ctx.label === 'Semana 3 de Setembro de 2026',
+      'Cenário 1: rótulo da semana deveria seguir o formato RN-24', { label: ctx.label });
+    assert(ctx.today === '2026-09-16',
+      'Cenário 1: hoje deveria ser 2026-09-16 (Brasília)', { today: ctx.today });
 
     // 4. Persistir registros da semana vigente (semana 3) e de semanas/casas distintas
     const makeRecord = (partial: Partial<CleaningRecord>): CleaningRecord => {
@@ -89,11 +88,7 @@ export async function runHomeWeekSimulationTest(): Promise<{
         userId: USER_MEMBER,
         userName: 'Mariana de Souza',
         registeredById: USER_CREATOR,
-        dayOfWeek: 'ter',
         cleaningDate: '2026-09-15',
-        weekNumber: 3,
-        month: 9,
-        year: 2026,
         badgeIds: [],
         notes: undefined,
         createdAt: '2026-09-15T08:00:00.000Z',
@@ -103,7 +98,6 @@ export async function runHomeWeekSimulationTest(): Promise<{
 
     const recCurrent1: CleaningRecord = makeRecord({
       houseId: houseA.id,
-      dayOfWeek: 'ter',
       cleaningDate: '2026-09-15',
       badgeIds: [badgesA[0].id, badgesA[1].id, badgesA[2].id], // 3 tarefas → expansível
       notes: 'Limpeza especial no piso da cozinha.',
@@ -113,14 +107,12 @@ export async function runHomeWeekSimulationTest(): Promise<{
       userId: USER_CREATOR,
       userName: 'Carlos Oliveira',
       registeredById: USER_CREATOR,
-      dayOfWeek: 'qui',
       cleaningDate: '2026-09-17',
       badgeIds: [badgesA[3].id, badgesA[4].id], // 2 tarefas → não expansível
     });
     const recOtherWeek: CleaningRecord = makeRecord({
       houseId: houseA.id,
-      cleaningDate: '2026-09-08', // semana 2 (8/14 → teto(8/7)=2)
-      weekNumber: 2,
+      cleaningDate: '2026-09-08', // semana anterior (06/09 a 12/09)
       badgeIds: [badgesA[5].id],
     });
     const recHouseB: CleaningRecord = makeRecord({
@@ -143,10 +135,10 @@ export async function runHomeWeekSimulationTest(): Promise<{
     assert(persistOk, 'Todos os 4 registros de teste deveriam ser persistidos');
 
     // 5. Cenário 2: consulta da semana vigente com isolamento (RN-19)
-    const weeklyA = await dbService.getCleaningRecords(houseA.id, { year: 2026, month: 9, weekNumber: 3 });
+    const weeklyA = await dbService.getCleaningRecords(houseA.id, { from: ctx.start, to: ctx.end });
     assert(weeklyA.length === 2, 'Cenário 2: semana 3 da casa A deveria ter 2 registros', { len: weeklyA.length });
     assert(weeklyA.every((r) => r.houseId === houseA.id), 'Cenário 2: isolamento RN-19 — apenas registros da casa A', { weeklyA });
-    assert(weeklyA.every((r) => r.weekNumber === 3 && r.month === 9 && r.year === 2026),
+    assert(weeklyA.every((r) => r.cleaningDate >= ctx.start && r.cleaningDate <= ctx.end),
       'Cenário 2: apenas registros da semana vigente deveriam ser retornados', { weeklyA });
     assert(weeklyA[0].cleaningDate === '2026-09-15' && weeklyA[1].cleaningDate === '2026-09-17',
       'Cenário 2: ordenação cronológica ascendente por cleaningDate', { dates: weeklyA.map((r) => r.cleaningDate) });
@@ -206,8 +198,8 @@ export async function runHomeWeekSimulationTest(): Promise<{
     const homeState = deriveWeekHomeState(weeklyA, badgesA, now);
     assert(homeState.count === 2 && homeState.cards.length === 2,
       'Cenário 5: resumo semanal deve refletir a quantidade de registros da semana', { homeState });
-    assert(homeState.weekContext.weekLabel === 'Semana 3 de Setembro de 2026',
-      'Cenário 5: contexto do resumo deve ser o da semana vigente', { label: homeState.weekContext.weekLabel });
+    assert(homeState.weekContext.label === 'Semana 3 de Setembro de 2026',
+      'Cenário 5: contexto do resumo deve ser o da semana vigente', { label: homeState.weekContext.label });
 
     // 10. Cenário 6: badge removido (referência órfã) não quebra o card
     const orphanRecord: CleaningRecord = { ...recCurrent2, badgeIds: [badgesA[3].id, 'bdg-removido-xyz'] };
@@ -228,7 +220,7 @@ export async function runHomeWeekSimulationTest(): Promise<{
       details: {
         casaA: houseA.name,
         casaB: houseB.name,
-        semana: homeState.weekContext.weekLabel,
+        semana: homeState.weekContext.label,
         registrosSemana: weeklyA.length,
         cardsDerivados: homeState.cards.length,
         expansao: { isExpandable: card1.isExpandable, overflowCount: card1.overflowCount },

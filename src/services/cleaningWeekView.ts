@@ -1,36 +1,29 @@
-// TSK-404 / SPEC-017: Camada de domínio da tela principal (semana vigente)
-import type { CleaningRecord, Badge, DayOfWeek } from '../types';
-import { WEEKDAY_LABELS, computeRecordWeek, getTodayDayOfWeek } from './cleaningRegistration';
+// TSK-404 / SPEC-017 + TSK-407 / SPEC-020: Camada de domínio da tela principal (semana vigente)
+import type { CleaningRecord, Badge } from '../types';
+import {
+  IsoDate,
+  WEEKDAY_LABELS,
+  WeekInfo,
+  dayOfWeekOf,
+  formatShortDate,
+  todayInBusinessTz,
+  weekOf
+} from '../domain/week';
 import { hasValidNotes } from './cleaningNotesIndicator';
 
-export const PT_MONTH_NAMES: readonly string[] = [
-  'Janeiro',
-  'Fevereiro',
-  'Março',
-  'Abril',
-  'Maio',
-  'Junho',
-  'Julho',
-  'Agosto',
-  'Setembro',
-  'Outubro',
-  'Novembro',
-  'Dezembro',
-];
-
-export interface WeekContext {
-  weekNumber: number;
-  month: number;
-  year: number;
-  weekLabel: string;
-  todayDayOfWeek: DayOfWeek;
+/** Semana vigente (domingo a sábado, Brasília) e a data de hoje. */
+export interface WeekContext extends WeekInfo {
+  today: IsoDate;
 }
 
 export interface CleaningCardView {
   recordId: string;
   userName: string;
   initials: string;
+  /** "Segunda-feira" — derivado da data da faxina. */
   weekdayLabel: string;
+  /** "28/09" — a semana pode cruzar meses (SPEC-020). */
+  dateLabel: string;
   badgeNames: string[];
   hasNotes: boolean;
   notes?: string;
@@ -38,17 +31,10 @@ export interface CleaningCardView {
   overflowCount: number;
 }
 
-/** Deriva o contexto determinístico da semana vigente a partir da data atual. */
+/** Deriva a semana vigente a partir do instante atual, no horário de Brasília (RN-08). */
 export function deriveWeekContext(now: Date = new Date()): WeekContext {
-  const { weekNumber, month, year } = computeRecordWeek(now);
-  const weekLabel = `Semana ${weekNumber} de ${PT_MONTH_NAMES[month - 1]} de ${year}`;
-  return {
-    weekNumber,
-    month,
-    year,
-    weekLabel,
-    todayDayOfWeek: getTodayDayOfWeek(now),
-  };
+  const today = todayInBusinessTz(now);
+  return { ...weekOf(today), today };
 }
 
 const LINKING_PARTICLES = new Set(['de', 'da', 'do', 'das', 'dos', 'e', '&']);
@@ -84,7 +70,8 @@ export function buildCleaningCardView(record: CleaningRecord, badges: Badge[]): 
     recordId: record.id,
     userName: record.userName,
     initials: getInitials(record.userName),
-    weekdayLabel: WEEKDAY_LABELS[record.dayOfWeek],
+    weekdayLabel: WEEKDAY_LABELS[dayOfWeekOf(record.cleaningDate)],
+    dateLabel: formatShortDate(record.cleaningDate),
     badgeNames,
     hasNotes: hasValidNotes(record.notes),
     notes: record.notes?.trim() || undefined,

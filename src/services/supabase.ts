@@ -615,20 +615,19 @@ export const dbService = {
 
   /**
    * TSK-403 / SPEC-016 / RN-19: Consulta registros de faxina de uma casa
-   * (isolamento total por houseId), opcionalmente filtrando por semana
-   * (year/month/weekNumber) ou responsável (userId) — base das TSK-404/TSK-501.
+   * (isolamento total por houseId), opcionalmente filtrando por intervalo
+   * inclusivo de datas (from/to, AAAA-MM-DD — SPEC-020) ou responsável (userId).
    */
   async getCleaningRecords(
     houseId: string,
-    filters?: { year?: number; month?: number; weekNumber?: number; userId?: string }
+    filters?: { from?: string; to?: string; userId?: string }
   ): Promise<CleaningRecord[]> {
     const recordsJson = localStorage.getItem(LOCAL_STORAGE_KEY_CLEANING_RECORDS);
     const records: CleaningRecord[] = recordsJson ? JSON.parse(recordsJson) : [];
     return records
       .filter(r => r.houseId === houseId)
-      .filter(r => filters?.year === undefined || r.year === filters.year)
-      .filter(r => filters?.month === undefined || r.month === filters.month)
-      .filter(r => filters?.weekNumber === undefined || r.weekNumber === filters.weekNumber)
+      .filter(r => filters?.from === undefined || r.cleaningDate >= filters.from)
+      .filter(r => filters?.to === undefined || r.cleaningDate <= filters.to)
       .filter(r => filters?.userId === undefined || r.userId === filters.userId)
       .sort((a, b) => (a.cleaningDate < b.cleaningDate ? -1 : a.cleaningDate > b.cleaningDate ? 1 : 0));
   }
