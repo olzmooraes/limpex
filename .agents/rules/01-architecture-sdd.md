@@ -8,8 +8,8 @@ Esta regra orienta como o software do Limpex deve ser arquitetado, modularizado 
 
 No Limpex, o código é um reflexo direto de uma especificação formal. Nenhuma funcionalidade deve ser codificada sem passar pelas etapas:
 
-1. **Seleção de Item do Backlog**: Identificar a tarefa em [.agents/backlog/backlog.md](file:///c:/projetos/limpex/.agents/backlog/backlog.md).
-2. **Criação da Spec**: Criar um arquivo `.agents/specs/SPEC-XXX-<nome>.md` usando [.agents/templates/feature-spec-template.md](file:///c:/projetos/limpex/.agents/templates/feature-spec-template.md).
+1. **Seleção de Item do Backlog**: Identificar a tarefa em [.agents/backlog/backlog.md](../backlog/backlog.md).
+2. **Criação da Spec**: Criar um arquivo `.agents/specs/SPEC-XXX-<nome>.md` usando [.agents/templates/feature-spec-template.md](../templates/feature-spec-template.md).
 3. **Definição de Contratos & Schemas**:
    - Modelos de dados (TypeScript interfaces / Zod schemas / SQL DDL).
    - Endpoints ou queries Supabase/PostgreSQL.

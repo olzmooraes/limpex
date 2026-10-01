@@ -1,7 +1,7 @@
 # SPEC-010: Tela de Gestão de Badges (Item 2 da Bottom Navbar)
 
 - **Status**: APPROVED
-- **Épico**: [Épico 3 — Gestão de Badges de Tarefas e Limitações](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [Épico 3 — Gestão de Badges de Tarefas e Limitações](../backlog/backlog.md)
 - **Tarefa**: `TSK-302`
 - **Autor**: Arquiteto AI
 - **Data de Criação**: 2026-09-15
@@ -109,7 +109,7 @@ const customLimitReached = customCount >= MAX_CUSTOM_BADGES;  // 20
   5. Botão **Novo Badge** (pílula tracejada `+`) — visível apenas para o criador; desabilitado ao atingir RN-12 com mensagem.
   6. Estado vazio (sem casa ativa): card com `AlertTriangle` e texto orientativo.
   7. Estado de carregamento: indicador suave enquanto busca os badges.
-- **Dimensões e Touch**: alvos de toque ≥ 44px (`--touch-target-min`), margens laterais 16px, chips com `--radius-full`, transições `--transition-fast`. Visual coerente com os tokens de [ui-ux-design-tokens.md](file:///c:/projetos/limpex/.agents/references/ui-ux-design-tokens.md).
+- **Dimensões e Touch**: alvos de toque ≥ 44px (`--touch-target-min`), margens laterais 16px, chips com `--radius-full`, transições `--transition-fast`. Visual coerente com os tokens de [ui-ux-design-tokens.md](../references/ui-ux-design-tokens.md).
 
 ---
 
@@ -127,4 +127,4 @@ const customLimitReached = customCount >= MAX_CUSTOM_BADGES;  // 20
 ## 7. Rastreabilidade
 - **SPEC-010** → **Épico 3** → TSK-302.
 - TSK-303 (criação), TSK-304 (edição) e TSK-305 (exclusão) herdam esta tela e conectam `onRequestCreateBadge` e os controles de gestão.
-- **RN-10 a RN-15, RN-19, RN-21** (ver [business-rules.md](file:///c:/projetos/limpex/.agents/references/business-rules.md)).
+- **RN-10 a RN-15, RN-19, RN-21** (ver [business-rules.md](../references/business-rules.md)).

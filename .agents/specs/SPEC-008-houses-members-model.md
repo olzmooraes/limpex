@@ -1,7 +1,7 @@
 # SPEC-008: Modelagem e Migração de `houses` e `house_members`
 
 - **Status**: APPROVED
-- **Épico**: [[EPIC-2] Gestão de Casas, Membros e Permissões](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [[EPIC-2] Gestão de Casas, Membros e Permissões](../backlog/backlog.md)
 - **Tarefas**: `TSK-201` (base), os demais itens do Épico 2 herdam este modelo
 - **Autor**: Arquiteto AI
 - **Data de Criação**: 2026-09-14

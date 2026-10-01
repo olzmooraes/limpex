@@ -1,12 +1,12 @@
 # SPEC-015: Tela/Modal de Registro de Faxina (Item Central da Navbar)
 
 - **Status**: IMPLEMENTED
-- **Épico**: [EPIC 4 - Registro de Faxina e Tela Principal Semanal](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [EPIC 4 - Registro de Faxina e Tela Principal Semanal](../backlog/backlog.md)
 - **Autor**: Agente AI / Arquiteto
 - **Data de Criação**: 2026-09-15
 - **Última Atualização**: 2026-09-15
 - **Tarefa Relacionada**: `TSK-402` (dependências: `TSK-301` — badges, `TSK-401` — navbar)
-- **Depende de**: [SPEC-014-bottom-navbar.md](file:///c:/projetos/limpex/.agents/specs/SPEC-014-bottom-navbar.md)
+- **Depende de**: [SPEC-014-bottom-navbar.md](SPEC-014-bottom-navbar.md)
 
 ---
 

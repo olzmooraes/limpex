@@ -26,6 +26,19 @@ gantt
 
 ---
 
+## Replanejamento de 2026-10-01
+
+A revisão técnica de 2026-10-01 mostrou que os Milestones 1 a 3 foram entregues sobre um mock em `localStorage`, sem banco real, e que a regra de semana estava incorreta. Antes do Milestone 4 entra o **Milestone R: Refundação Técnica** ([Épico 7](backlog.md)):
+
+1. TSK-701: higiene do repositório e Vitest.
+2. TSK-407: regra de semana dom–sáb no horário de Brasília.
+3. TSK-702: schema do banco reescrito como baseline limpa.
+4. TSK-703: cliente Supabase real e divisão do `App.tsx`.
+
+As decisões de produto aprovadas estão em [business-rules.md §7](../references/business-rules.md).
+
+---
+
 ## Detalhamento dos Marcos
 
 ### Milestone 0: Harness Engineering & Setup SDD (Concluído)

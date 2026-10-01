@@ -1,7 +1,7 @@
 # SPEC-006: Autenticação com Senha Protegida e Integração Google OAuth
 
 - **Status**: APPROVED
-- **Épico**: [[EPIC-1] Fundação, Autenticação e Teto Global de Usuários](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [[EPIC-1] Fundação, Autenticação e Teto Global de Usuários](../backlog/backlog.md)
 - **Tarefa**: `TSK-106`
 - **Autor**: Arquiteto AI
 - **Data de Criação**: 2026-09-12

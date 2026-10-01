@@ -4,7 +4,6 @@ import { MobileContainer } from './components/layout/MobileContainer';
 import { Header } from './components/layout/Header';
 import { BottomNavbar } from './components/layout/BottomNavbar';
 import { AuthScreen } from './components/auth/AuthScreen';
-import { AuditModal } from './components/dev/AuditModal';
 import { BadgeManagementPanel } from './components/badges/BadgeManagementPanel';
 import { BadgeCreateModal } from './components/badges/BadgeCreateModal';
 import { BadgeEditModal } from './components/badges/BadgeEditModal';
@@ -22,7 +21,6 @@ import {
   Copy, 
   Check, 
   Share2,
-  ShieldCheck,
   Building2,
   Lock,
   LogIn,
@@ -42,7 +40,6 @@ export const App: React.FC = () => {
   const [housesMessage, setHousesMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
-  const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [housePendingDelete, setHousePendingDelete] = useState<string | null>(null);
   const [isDeletingHouse, setIsDeletingHouse] = useState(false);
   const [houseBadges, setHouseBadges] = useState<Badge[] | null>(null);
@@ -325,38 +322,6 @@ export const App: React.FC = () => {
     return (
       <MobileContainer>
         <AuthScreen onAuthSuccess={(user) => setCurrentUser(user)} />
-        
-        {/* Botão Flutuante de Auditoria do Épico 1 */}
-        <button
-          type="button"
-          onClick={() => setIsAuditModalOpen(true)}
-          style={{
-            position: 'absolute',
-            bottom: '12px',
-            right: '12px',
-            padding: '6px 12px',
-            borderRadius: '9999px',
-            background: 'rgba(30, 41, 59, 0.9)',
-            border: '1px solid rgba(16, 185, 129, 0.4)',
-            color: '#10b981',
-            fontSize: '11px',
-            fontWeight: 600,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-            zIndex: 99
-          }}
-          title="Auditar Barreira de 100 Usuários"
-        >
-          <ShieldCheck size={14} />
-          <span>Auditar 100 Users</span>
-        </button>
-
-        <AuditModal 
-          isOpen={isAuditModalOpen} 
-          onClose={() => setIsAuditModalOpen(false)} 
-        />
       </MobileContainer>
     );
   }
@@ -370,38 +335,6 @@ export const App: React.FC = () => {
         onSelectHouse={handleSelectHouse}
         onManageHouses={() => setActiveTab('houses')}
         onLogout={handleLogout}
-      />
-
-      {/* Botão Flutuante de Auditoria do Épico 1 */}
-      <button
-        type="button"
-        onClick={() => setIsAuditModalOpen(true)}
-        style={{
-          position: 'absolute',
-          top: '68px',
-          right: '12px',
-          padding: '4px 10px',
-          borderRadius: '9999px',
-          background: 'rgba(30, 41, 59, 0.9)',
-          border: '1px solid rgba(16, 185, 129, 0.4)',
-          color: '#10b981',
-          fontSize: '11px',
-          fontWeight: 600,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '5px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-          zIndex: 40
-        }}
-        title="Auditar Barreira de 100 Usuários"
-      >
-        <ShieldCheck size={13} />
-        <span>Auditoria</span>
-      </button>
-
-      <AuditModal 
-        isOpen={isAuditModalOpen} 
-        onClose={() => setIsAuditModalOpen(false)} 
       />
 
       {/* Área de Conteúdo com Rolagem Touch */}

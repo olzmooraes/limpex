@@ -1,7 +1,7 @@
 # SPEC-[ID]: [Nome da Funcionalidade]
 
 - **Status**: [DRAFT | IN_REVIEW | APPROVED | IMPLEMENTED]
-- **Épico**: [[EPIC-ID] - Título do Épico](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [[EPIC-ID] - Título do Épico](../backlog/backlog.md)
 - **Autor**: Agente AI / Arquiteto
 - **Data de Criação**: [AAAA-MM-DD]
 - **Última Atualização**: [AAAA-MM-DD]
@@ -14,7 +14,7 @@ Descreva de forma concisa o que esta funcionalidade entrega e qual necessidade d
 ---
 
 ## 2. Regras de Negócio Envolvidas
-Liste as regras e restrições obrigatórias impactadas (ver [.agents/references/business-rules.md](file:///c:/projetos/limpex/.agents/references/business-rules.md)):
+Liste as regras e restrições obrigatórias impactadas (ver [.agents/references/business-rules.md](../references/business-rules.md)):
 - [ ] Limite de 100 usuários
 - [ ] Limite de 1 casa por criador
 - [ ] Limite de 34 badges por casa

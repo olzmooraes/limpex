@@ -1,8 +1,8 @@
 # TASK-[ID]: [Título Conciso da Tarefa]
 
-- **Épico**: [[EPIC-ID]](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [[EPIC-ID]](../backlog/backlog.md)
 - **Status**: [TODO | IN_PROGRESS | REVIEW | DONE]
-- **Spec Relacionada**: [SPEC-XXX](file:///c:/projetos/limpex/.agents/specs/)
+- **Spec Relacionada**: [SPEC-XXX](../specs/)
 - **Complexidade Estimada**: [P | M | G]
 
 ---

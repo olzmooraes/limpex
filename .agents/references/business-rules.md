@@ -1,6 +1,6 @@
 # Referência de Regras de Negócio do Limpex
 
-Este documento consolida e formaliza todas as regras de negócio extraídas da especificação original ([especificacao_app_faxina.md](file:///c:/projetos/limpex/especificacao_app_faxina.md)).
+Este documento consolida e formaliza todas as regras de negócio extraídas da especificação original ([especificacao_app_faxina.md](../../especificacao_app_faxina.md)).
 
 ---
 
@@ -94,3 +94,22 @@ Este documento consolida e formaliza todas as regras de negócio extraídas da e
   Os blocos correspondentes aos dias em que houve faxina registrada recebem cor de fundo de destaque.
 - **RN-26 (Exibição Condicional)**: Apenas semanas que contiverem ao menos uma faxina registrada são exibidas na lista.
 - **RN-27 (Detalhamento Expansível)**: Ao tocar no card da semana, ele se expande exibindo o consolidado de todas as atividades realizadas naquela semana.
+
+---
+
+## 7. Decisões de Produto de 2026-10-01 (prevalecem sobre as seções acima)
+
+Aprovadas pelo dono do produto após a revisão técnica de 2026-10-01. Onde houver conflito com as regras anteriores ou com a especificação original, valem estas.
+
+### Revisões de regras existentes
+- **RN-08 (revisada — Semana e Reset Semanal)**: A semana vai de **domingo a sábado**, no fuso **America/Sao_Paulo** (horário de Brasília). A virada ocorre no domingo às 00:00. A semana pertence ao mês que contém a maior parte dos seus dias, ou seja, o mês da sua quarta-feira.
+- **RN-24 (revisada — Título da Semana)**: `"Semana [N] de [Nome do Mês] de [Ano]"`, com **N de 1 a 5**, numerando as semanas do mês pelo critério da RN-08. Ex.: a semana de 27/09/2026 a 03/10/2026 é *"Semana 5 de Setembro de 2026"*.
+- **RN-09 (revisada — Data da Faxina)**: Os chips `dom`..`sab` representam a semana atual, com os dias futuros desabilitados. A opção "Outra data" permite qualquer data passada a partir da criação da casa. Datas futuras são sempre rejeitadas.
+- **RN-05 (revisada — Autenticação)**: Cadastro por nome, e-mail e senha, sem critério de força além do mínimo de 6 caracteres imposto pelo Supabase Auth. Sem confirmação de e-mail no cadastro. Há recuperação de senha por e-mail. O login com Google permanece no escopo, mas é implementado depois do fluxo de e-mail e senha.
+- **RN-14 (revisada — Exclusão de Badge)**: A exclusão é lógica. Faxinas de semanas anteriores mantêm o badge, com o nome preservado no histórico. Faxinas da semana atual perdem o vínculo com o badge excluído. Se uma faxina ficar sem tarefas, o registro é mantido e sinalizado como "sem tarefas" para que seja editado.
+
+### Novas regras
+- **RN-28 (Edição e Exclusão de Faxina)**: Quem registrou a faxina e o responsável por ela podem editá-la ou excluí-la (correção de erro humano). A exclusão de faxina não gera log de auditoria.
+- **RN-29 (Saída da Casa)**: Um membro pode sair de uma casa. O criador não pode sair da própria casa, apenas excluí-la. Não há transferência de propriedade. As faxinas de ex-membros permanecem no histórico com o nome do responsável.
+- **RN-30 (Remoção de Membro)**: O criador pode remover membros da casa. A saída e a remoção de membros geram registro no log de auditoria (extensão da Restrição nº 5).
+- **RN-31 (Novo Código de Convite)**: O criador pode gerar um novo código de convite, invalidando o anterior.

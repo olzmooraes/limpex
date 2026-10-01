@@ -1,7 +1,7 @@
 # SPEC-011: Criação de Badges Customizados
 
 - **Status**: APPROVED
-- **Épico**: [Épico 3 — Gestão de Badges de Tarefas e Limitações](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [Épico 3 — Gestão de Badges de Tarefas e Limitações](../backlog/backlog.md)
 - **Tarefa**: `TSK-303`
 - **Autor**: Arquiteto AI
 - **Data de Criação**: 2026-09-15
@@ -119,7 +119,7 @@ interface BadgeCreateModalProps {
 - **Modal bottom-sheet**: overlay com blur, conteúdo centralizado, cabeçalho com contadores `{total}/34` e `{custom}/20`.
 - **Input**: campo único com ícone `Tag`, `maxLength = 40`, live validation com mensagem de erro em vermelho.
 - **Feedback**: spinner no botão durante o submit; fecha o modal em sucesso e recarrega a lista de badges da casa ativa (RN-19).
-- **Touch**: alvos ≥ 44px (`--touch-target-min`), coerentes com [ui-ux-design-tokens.md](file:///c:/projetos/limpex/.agents/references/ui-ux-design-tokens.md).
+- **Touch**: alvos ≥ 44px (`--touch-target-min`), coerentes com [ui-ux-design-tokens.md](../references/ui-ux-design-tokens.md).
 
 ---
 
@@ -137,4 +137,4 @@ interface BadgeCreateModalProps {
 ## 7. Rastreabilidade
 - **SPEC-011** → **Épico 3** → TSK-303.
 - TSK-302 (SPEC-010) provê o ponto de entrada "Novo Badge"; TSK-306 agrega a suíte de testes do Épico 3.
-- **RN-10 a RN-15, RN-19, RN-21** (ver [business-rules.md](file:///c:/projetos/limpex/.agents/references/business-rules.md)).
+- **RN-10 a RN-15, RN-19, RN-21** (ver [business-rules.md](../references/business-rules.md)).

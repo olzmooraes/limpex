@@ -1,7 +1,7 @@
 # SPEC-009: Modelagem e Seed dos 14 Badges de Sistema Pré-definidos
 
 - **Status**: APPROVED
-- **Épico**: [Épico 3 — Gestão de Badges de Tarefas e Limitações](file:///c:/projetos/limpex/.agents/backlog/backlog.md)
+- **Épico**: [Épico 3 — Gestão de Badges de Tarefas e Limitações](../backlog/backlog.md)
 - **Tarefas**: `TSK-301` (modelo + seed); TSK-303/TSK-305 herdam RN-10 a RN-15
 - **Autor**: Arquiteto AI
 - **Data de Criação**: 2026-09-14
@@ -73,7 +73,7 @@ Esta é a **spec base do Épico 3 (TSK-301)**. As demais regras (teto de customi
 ## 4. Contratos de Interface e Dados
 
 ### 4.1. PostgreSQL (Supabase)
-**Tabela `public.badges`** (criada na [SPEC-002](file:///c:/projetos/limpex/.agents/specs/SPEC-002-database-schema-supabase.md)):
+**Tabela `public.badges`** (criada na [SPEC-002](SPEC-002-database-schema-supabase.md)):
 ```sql
 CREATE TABLE IF NOT EXISTS public.badges (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -146,4 +146,4 @@ TSK-301 é 100% modelo/seed — **não introduz telas novas**. As telas da aba d
 
 ## 7. Rastreabilidade
 - **SPEC-009** → **Épico 3** → TSK-301 (seed), TSK-302..TSK-306.
-- **RN-10 a RN-15** (ver [business-rules.md](file:///c:/projetos/limpex/.agents/references/business-rules.md)).
+- **RN-10 a RN-15** (ver [business-rules.md](../references/business-rules.md)).

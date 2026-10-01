@@ -25,7 +25,7 @@ Todo ciclo de implementação neste repositório deve seguir rigorosamente o flu
 1. **Nunca suponha comportamento ambíguo**: especifique nos arquivos de spec antes de implementar.
 2. **Critérios de Aceite em formato BDD**: todo requisito funcional deve conter cenários `Dado... Quando... Então...`.
 3. **Imutabilidade de Restrições**: nenhuma refatoração pode afrouxar os limites de 100 usuários, 34 badges ou permissões de proprietário de casa.
-4. **Controle Contínuo do Backlog**: antes de iniciar uma tarefa, marque-a como `IN_PROGRESS` em [.agents/backlog/backlog.md](file:///c:/projetos/limpex/.agents/backlog/backlog.md). Ao concluir e verificar, marque como `DONE`.
+4. **Controle Contínuo do Backlog**: antes de iniciar uma tarefa, marque-a como `IN_PROGRESS` em [.agents/backlog/backlog.md](backlog/backlog.md). Ao concluir e verificar, marque como `DONE`.
 
 ---
 
@@ -77,7 +77,17 @@ O diretório `.agents/` é o centro de controle da inteligência e governança d
 
 ## 5. Diretrizes de Stack e Padrões de Código
 
-- **Frontend/Mobile**: Next.js (App Router) ou React PWA com TypeScript, Mobile-First.
-- **Estilos**: CSS modularizado/Tailwind com variáveis semânticas de design tokens, suporte a Dark/Light mode e micro-animações táteis.
+- **Frontend/Mobile**: React 18 + Vite + TypeScript (PWA), Mobile-First.
+- **Estilos**: CSS Modules com variáveis semânticas de design tokens (`src/styles/tokens.css`), micro-animações táteis.
 - **Backend/Database**: Supabase / PostgreSQL com Row Level Security (RLS) habilitado em todas as tabelas e triggers de validação de teto.
-- **Testes**: Cobertura de testes unitários para regras de domínio e testes E2E/integração para fluxos críticos de permissão e limites.
+  - **Estado atual (2026-10-01)**: a camada `src/services/supabase.ts` ainda é um mock em `localStorage`; a migração para o Supabase real é a prioridade do Épico 7.
+- **Fuso horário de negócio**: `America/Sao_Paulo` (horário de Brasília) para toda regra de data/semana.
+- **Testes**: Vitest (`npm test`). Suítes nativas usam o sufixo `*.spec.ts`; regras de domínio têm testes unitários e regras de RLS/limites têm testes de integração contra o banco.
+  - `src/tests/legacy-suites.spec.ts` executa as simulações legadas (`*.test.ts`) contra o mock até que sejam substituídas.
+  - Nenhum código de teste pode ser importado por código de produção.
+
+## 6. Registro Enxuto de Progresso
+
+- Ao concluir uma tarefa, a nota no backlog tem no máximo 3 linhas: o que mudou, onde está a spec e como foi verificado (`npm test`, `npm run typecheck`, `npm run build`).
+- Detalhes de implementação ficam no código e na spec, não no backlog.
+- Tarefas de infraestrutura/higiene (`chore`) não exigem spec própria; features e mudanças de regra de negócio exigem.
