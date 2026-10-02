@@ -6,24 +6,32 @@ O **Limpex** é um aplicativo mobile-first para gerenciamento de faxinas e taref
 
 ## Como rodar
 
-Requisitos: Node.js 20+.
+Requisitos: Node.js 20+ e Docker Desktop em execução (para o Supabase local).
 
 ```bash
 npm install
-npm run dev        # servidor de desenvolvimento em http://localhost:3000
-npm test           # testes (Vitest)
-npm run typecheck  # checagem de tipos
-npm run build      # build de produção em dist/
+npm run db:start    # sobe o Supabase local (1ª vez baixa as imagens)
+npm run env:local   # gera o .env.local apontando o app para o Supabase local
+npm run dev         # app em http://localhost:3000
 ```
 
-### Banco de dados local (Supabase)
+Em desenvolvimento, a tela de login mostra atalhos para as contas de teste do seed. As contas são `luiz@exemplo.com`, `carlos@exemplo.com` e `mariana@exemplo.com`, todas com a senha `limpex123`. Elas só existem no banco local.
 
-Requisitos: Docker Desktop em execução.
+### Testes e verificação
 
 ```bash
-npm run db:start   # sobe o Supabase local (1ª vez baixa as imagens)
-npm run db:reset   # recria o banco aplicando as migrações de supabase/migrations
-npm run test:db    # testes do banco (pgTAP)
+npm test                  # testes unitários (Vitest)
+npm run test:integration  # integração com o Supabase local (cadastro, login, dados)
+npm run test:db           # testes do banco (pgTAP)
+npm run typecheck         # checagem de tipos
+npm run build             # build de produção em dist/
+```
+
+### Banco de dados local
+
+```bash
+npm run db:reset   # recria o banco (migrações + seed de desenvolvimento)
+npm run db:types   # regenera src/types/database.ts a partir do banco
 npm run db:stop    # desliga os contêineres
 ```
 
@@ -31,7 +39,13 @@ Com o banco no ar:
 - Studio (painel visual): http://localhost:54323
 - E-mails de teste (ex.: recuperação de senha): http://localhost:54324
 
-> **Estado atual:** o banco já existe ([SPEC-021](.agents/specs/SPEC-021-database-baseline.md)), mas o app ainda usa um mock no `localStorage` do navegador. A conexão do app ao banco é a próxima etapa ([Épico 7](.agents/backlog/backlog.md)).
+### Publicação (Vercel)
+
+O app é estático (Vite) e conversa direto com o Supabase. Na Vercel:
+1. Importe o repositório do GitHub, com o preset Vite.
+2. Configure as variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` com os dados do projeto Supabase na nuvem.
+
+Cada push na `main` publica uma nova versão. Sem essas variáveis, o app mostra a tela "Limpex indisponível".
 
 ---
 

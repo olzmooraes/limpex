@@ -81,11 +81,13 @@ O diretório `.agents/` é o centro de controle da inteligência e governança d
 - **Estilos**: CSS Modules com variáveis semânticas de design tokens (`src/styles/tokens.css`), micro-animações táteis.
 - **Backend/Database**: Supabase / PostgreSQL com Row Level Security (RLS) habilitado em todas as tabelas e triggers de validação de teto.
   - **Banco**: baseline em `supabase/migrations/` ([SPEC-021](specs/SPEC-021-database-baseline.md)), rodando localmente via Docker (`npm run db:start`). Leitura via RLS; escrita somente por funções RPC.
-  - **Estado atual (2026-10-01)**: o app (`src/services/supabase.ts`) ainda usa um mock em `localStorage`; a conexão ao banco real é a TSK-703.
+  - **App** (TSK-703, [SPEC-022](specs/SPEC-022-app-supabase-integration.md)): autenticação real (Supabase Auth) e dados via `src/data/`. Não existe mais mock em `localStorage`.
+  - **Desenvolvimento local:** `npm run db:start` + `npm run env:local` (gera o `.env.local`). Contas de teste do seed: `luiz@`, `carlos@` e `mariana@exemplo.com`, senha `limpex123`.
 - **Fuso horário de negócio**: `America/Sao_Paulo` (horário de Brasília) para toda regra de data/semana.
 - **Testes**: Vitest (`npm test`). Suítes nativas usam o sufixo `*.spec.ts`; regras de domínio têm testes unitários.
   - Regras do banco (triggers, RLS, RPCs, limites) têm testes pgTAP em `supabase/tests/database/` (`npm run test:db`, com o Supabase local rodando).
-  - `src/tests/legacy-suites.spec.ts` executa as simulações legadas (`*.test.ts`) contra o mock até que sejam substituídas.
+  - Integração com o Supabase local: `npm run test:integration` (`src/integration/*.int.spec.ts`).
+  - `src/tests/legacy-suites.spec.ts` executa as 3 simulações legadas de lógica pura que restam, até serem convertidas.
   - Nenhum código de teste pode ser importado por código de produção.
 
 ## 6. Registro Enxuto de Progresso

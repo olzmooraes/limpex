@@ -155,8 +155,8 @@ Ordem: TSK-701 → TSK-407 → TSK-702 → TSK-703 → Épicos 5 e 6.
 | :--- | :--- | :---: | :---: | :---: | :--- |
 | `TSK-701` | Higiene do repositório: `.gitignore`, `node_modules`/`dist` fora do git, remoção do painel de auditoria in-app, Vitest (`npm test`), links relativos | `DONE` | P0 | Nenhuma | chore · Conclusão: 2026-10-01 |
 | `TSK-702` | Reescrita do schema como baseline limpa: RLS sem recursão (helper `is_house_member`), RPC de entrada por convite, trigger `auth.users → public.users`, teto de 100 no Auth, teto de 34 badges no banco, logs de exclusão gravados pelas RPCs, exclusão lógica de badge, data da faxina como única fonte da semana, UUIDs | `DONE` | P0 | TSK-701 | [SPEC-021](../specs/SPEC-021-database-baseline.md) · Conclusão: 2026-10-01 |
-| `TSK-703` | Cliente Supabase real: auth e-mail/senha com recuperação de senha, `dbService` real, remoção do mock em `localStorage`, divisão do `App.tsx` em telas | `IN_PROGRESS` | P0 | TSK-702 | [SPEC-022](../specs/SPEC-022-app-supabase-integration.md) |
-| `TSK-704` | Testes de integração de RLS e limites contra Supabase local (requer Docker Desktop + Supabase CLI) | `IN_PROGRESS` | P0 | TSK-702 | absorvida pela TSK-703 ([SPEC-022](../specs/SPEC-022-app-supabase-integration.md)) |
+| `TSK-703` | Cliente Supabase real: auth e-mail/senha com recuperação de senha, `dbService` real, remoção do mock em `localStorage`, divisão do `App.tsx` em telas | `DONE` | P0 | TSK-702 | [SPEC-022](../specs/SPEC-022-app-supabase-integration.md) · Conclusão: 2026-10-02 |
+| `TSK-704` | Testes de integração de RLS e limites contra Supabase local (requer Docker Desktop + Supabase CLI) | `DONE` | P0 | TSK-702 | absorvida pela TSK-703 ([SPEC-022](../specs/SPEC-022-app-supabase-integration.md)) |
 | `TSK-705` | Login com Google OAuth (requer credenciais do Google Cloud Console) | `TODO` | P2 | TSK-703 | a criar |
 | `TSK-706` | Projeto Supabase em nuvem (criado pelo dono do produto, região São Paulo) e deploy na Vercel com push na `main`; até lá o desenvolvimento usa o Supabase local via Docker | `TODO` | P1 | TSK-703 | a criar |
 
@@ -165,3 +165,6 @@ Ordem: TSK-701 → TSK-407 → TSK-702 → TSK-703 → Épicos 5 e 6.
 
 > **TSK-702 — Concluída em 2026-10-01.** Baseline em 4 migrações (`supabase/migrations/`), Supabase local via Docker, 13 RPCs com códigos de erro. A camada de banco das TSK-207/208/209/307/409 e das TSK-601 a 604 também ficou pronta.
 > Verificação: `npm run db:reset` ✓ · `npm run test:db` 129/129 ✓ (a suíte falha com a política recursiva antiga) · `supabase db lint` sem avisos · cadastro real pela API do Auth cria perfil, casa e badges.
+
+> **TSK-703 + TSK-704 — Concluídas em 2026-10-02** · Spec: [SPEC-022](../specs/SPEC-022-app-supabase-integration.md). O app passou a usar Supabase Auth real (cadastro, login, recuperação de senha, teto de 100) e dados em `src/data/`; o mock foi removido e o `App.tsx` foi dividido em `screens/` e hooks.
+> Verificação: `npm test` 94/94 ✓ · `npm run test:integration` 15/15 ✓ · `npm run test:db` 129/129 ✓ · `npm run build` ✓ · teste manual com 3 contas (faxina registrada por um morador aparece para o outro; recuperação de senha pelo e-mail local).

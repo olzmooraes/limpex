@@ -25,21 +25,28 @@ No Limpex, o código é um reflexo direto de uma especificação formal. Nenhuma
 
 ## 2. Princípios de Separação de Camadas (Clean Boundaries)
 
-O projeto deve manter clara separação entre camadas de responsabilidade:
+O projeto mantém separação entre camadas de responsabilidade (estrutura real desde a TSK-703):
 
 ```
 src/
-├── app/                  # Rotas e páginas (Next.js App Router / PWA)
-├── components/           # Componentes de UI desacoplados e reutilizáveis
-│   ├── ui/               # Botões, inputs, modais, badges genéricos
-│   └── cleaning/         # Componentes específicos de faxina, semana e casas
-├── domain/               # Entidades, tipos e lógica pura de negócio
-│   ├── models/           # User, House, CleaningRecord, Badge, AuditLog
-│   └── rules/            # Validadores de limites (100 users, 34 badges, 1 casa)
-├── services/             # Clientes de API, Supabase e persistência
-├── hooks/                # Custom React hooks para estado e interações
-└── lib/                  # Utilitários gerais (formatadores de data, helpers)
+├── App.tsx               # Decide a tela pela sessão (login, nova senha, app)
+├── screens/              # MainShell (cabeçalho + abas + navbar) e uma tela por aba
+├── components/           # Componentes de UI reutilizáveis (auth, badges, cleaning, layout)
+├── hooks/                # useSession, useHouses, useHouseData, useCurrentWeek...
+├── data/                 # Acesso ao Supabase: leitura via RLS, escrita via RPC, mapeamentos
+├── domain/               # Lógica pura de negócio sem dependências (ex.: week.ts — SPEC-020)
+├── services/             # Lógica de apresentação e validação no cliente (retorno imediato)
+├── lib/                  # Cliente Supabase e tradução de erros (AppError)
+├── integration/          # Testes de integração contra o Supabase local (*.int.spec.ts)
+└── types/                # Tipos do app e tipos gerados do banco (database.ts)
+supabase/
+├── migrations/           # Fonte da verdade do banco (SPEC-021)
+├── tests/database/       # Testes pgTAP
+└── seed.sql              # Dados só de desenvolvimento
 ```
+
+- **Regras de negócio:** são aplicadas pelo banco (RLS, triggers e RPCs). O cliente só antecipa validações para dar retorno imediato.
+- **Acesso a dados:** componentes e telas nunca chamam o Supabase direto; usam `src/data/`.
 
 ---
 

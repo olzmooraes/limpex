@@ -1,6 +1,6 @@
 # SPEC-022: App Conectado ao Supabase (Auth Real e Camada de Dados)
 
-- **Status**: APPROVED
+- **Status**: IMPLEMENTED
 - **Épico**: [ÉPICO 7 - Refundação Técnica](../backlog/backlog.md)
 - **Autor**: Agente AI / Arquiteto
 - **Data de Criação**: 2026-10-01
@@ -188,3 +188,13 @@ Enquanto as variáveis não estiverem configuradas na Vercel, o app publicado mo
 - Login com Google (TSK-705).
 - Telas novas de sair da casa, remover membro, novo código, editar ou excluir faxina (TSK-207/208/209/409): o banco já suporta, mas a interface vem depois.
 - Histórico (Épico 5).
+
+---
+
+## 9. Notas da Implementação (2026-10-02)
+
+- **Cadastro acima do teto:** o `supabase-js` devolve o erro como `AuthRetryableFetchError` com status 500, o mesmo tipo usado para falha de rede. O `toAppError` só trata como rede quando não há resposta do servidor ou ele está indisponível; o 500 vira `SIGNUP_FAILED`, e a tela confirma o teto pela capacidade.
+- **Ordem das tarefas no card:** segue a ordem dos badges da casa (RN-10). O banco não garante a ordem dos vínculos.
+- **Troca de usuário:** o app autenticado (`MainShell`) é montado com `key` igual ao id do usuário, então trocar de conta recomeça do estado inicial.
+- **Única diferença de comportamento na E4:** mensagens e campos da aba Casas são limpos ao sair da aba.
+- **Tamanho do pacote:** o `supabase-js` levou o bundle a ~458 kB (~130 kB gzip). Se pesar no celular, dá para trocar por `@supabase/auth-js` + `@supabase/postgrest-js`.
