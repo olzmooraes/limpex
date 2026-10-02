@@ -93,3 +93,9 @@ O diretório `.agents/` é o centro de controle da inteligência e governança d
 - Ao concluir uma tarefa, a nota no backlog tem no máximo 3 linhas: o que mudou, onde está a spec e como foi verificado (`npm test`, `npm run typecheck`, `npm run build`).
 - Detalhes de implementação ficam no código e na spec, não no backlog.
 - Tarefas de infraestrutura/higiene (`chore`) não exigem spec própria; features e mudanças de regra de negócio exigem.
+
+## 7. Fluxo de Git (fase de desenvolvimento)
+
+- Trabalho direto na `main`, sem branches de feature nem pull requests (decisão do dono do produto em 2026-10-02).
+- Um commit por entrega; ao concluir cada tarefa, rodar `npm run typecheck`, `npm test`, `npm run build` e, se o banco mudou, `npm run test:db`. Só então fazer `git push origin main`.
+- Nunca usar `--force`. Este fluxo vale enquanto não houver usuários reais.

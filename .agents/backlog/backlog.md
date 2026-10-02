@@ -155,10 +155,10 @@ Ordem: TSK-701 → TSK-407 → TSK-702 → TSK-703 → Épicos 5 e 6.
 | :--- | :--- | :---: | :---: | :---: | :--- |
 | `TSK-701` | Higiene do repositório: `.gitignore`, `node_modules`/`dist` fora do git, remoção do painel de auditoria in-app, Vitest (`npm test`), links relativos | `DONE` | P0 | Nenhuma | chore · Conclusão: 2026-10-01 |
 | `TSK-702` | Reescrita do schema como baseline limpa: RLS sem recursão (helper `is_house_member`), RPC de entrada por convite, trigger `auth.users → public.users`, teto de 100 no Auth, teto de 34 badges no banco, logs de exclusão gravados pelas RPCs, exclusão lógica de badge, data da faxina como única fonte da semana, UUIDs | `DONE` | P0 | TSK-701 | [SPEC-021](../specs/SPEC-021-database-baseline.md) · Conclusão: 2026-10-01 |
-| `TSK-703` | Cliente Supabase real: auth e-mail/senha com recuperação de senha, `dbService` real, remoção do mock em `localStorage`, divisão do `App.tsx` em telas | `TODO` | P0 | TSK-702 | a criar |
-| `TSK-704` | Testes de integração de RLS e limites contra Supabase local (requer Docker Desktop + Supabase CLI) | `TODO` | P0 | TSK-702 | a criar |
+| `TSK-703` | Cliente Supabase real: auth e-mail/senha com recuperação de senha, `dbService` real, remoção do mock em `localStorage`, divisão do `App.tsx` em telas | `IN_PROGRESS` | P0 | TSK-702 | [SPEC-022](../specs/SPEC-022-app-supabase-integration.md) |
+| `TSK-704` | Testes de integração de RLS e limites contra Supabase local (requer Docker Desktop + Supabase CLI) | `IN_PROGRESS` | P0 | TSK-702 | absorvida pela TSK-703 ([SPEC-022](../specs/SPEC-022-app-supabase-integration.md)) |
 | `TSK-705` | Login com Google OAuth (requer credenciais do Google Cloud Console) | `TODO` | P2 | TSK-703 | a criar |
-| `TSK-706` | Projeto Supabase em nuvem (criado pelo dono do produto) e deploy do app; até lá o desenvolvimento usa o Supabase local via Docker | `TODO` | P1 | TSK-703 | a criar |
+| `TSK-706` | Projeto Supabase em nuvem (criado pelo dono do produto, região São Paulo) e deploy na Vercel com push na `main`; até lá o desenvolvimento usa o Supabase local via Docker | `TODO` | P1 | TSK-703 | a criar |
 
 > **TSK-701 — Concluída em 2026-10-01.** Repositório passou de 6.152 para 119 arquivos rastreados; painel de auditoria fora do bundle (241,8 kB → 230,6 kB); simulações legadas rodam via [legacy-suites.spec.ts](../../src/tests/legacy-suites.spec.ts); 224 links `file:///` viraram relativos.
 > Verificação: `npm run typecheck` ✓ · `npm test` 20/20 ✓ (a suíte falha se o teto de 34 badges for alterado) · `npm run build` ✓.
