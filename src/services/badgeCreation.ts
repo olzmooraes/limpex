@@ -1,5 +1,5 @@
 import { Badge } from '../types';
-import { MAX_TOTAL_BADGES, MAX_CUSTOM_BADGES, SYSTEM_BADGE_COUNT } from './badgeDefinitions';
+import { MAX_TOTAL_BADGES, MAX_CUSTOM_BADGES } from './badgeDefinitions';
 
 export const BADGE_NAME_MAX_LENGTH = 40;
 export const BADGE_NAME_MIN_LENGTH = 1;
@@ -81,14 +81,3 @@ export function validateBadgeName(
   return { valid: true };
 }
 
-/**
- * Calcula o displayOrder para o próximo badge customizado.
- * Os badges do sistema ocupam 1..14; customizados começam em SYSTEM_BADGE_COUNT + 1.
- */
-export function nextCustomDisplayOrder(existingBadges: Badge[]): number {
-  const maxOrder = existingBadges.reduce(
-    (max, b) => Math.max(max, b.displayOrder ?? 0),
-    0
-  );
-  return Math.max(maxOrder + 1, SYSTEM_BADGE_COUNT + 1);
-}

@@ -55,10 +55,15 @@ export function getInitials(name: string): string {
   return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
 }
 
-/** Resolve os nomes dos badges na ordem de record.badgeIds (ignorando órfãos removidos). */
+/** Resolve os nomes dos badges da faxina (inclusive excluídos, que são histórico), ignorando referências inexistentes. */
 export function resolveBadgeNames(record: CleaningRecord, badges: Badge[]): string[] {
-  const badgeById = new Map(badges.map((b) => [b.id, b.name]));
-  return record.badgeIds.map((id) => badgeById.get(id)).filter((n): n is string => Boolean(n));
+  // Ordem dos badges da casa (display_order, RN-10): o banco não garante a
+  // ordem dos vínculos, e assim os cards ficam estáveis.
+  const linked = new Set(record.badgeIds);
+  return [...badges]
+    .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
+    .filter((badge) => linked.has(badge.id))
+    .map((badge) => badge.name);
 }
 
 export const TWO_TASKS_LIMIT = 2;

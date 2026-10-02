@@ -141,6 +141,13 @@
   line-height: 1.3;
 }
 
+/* RN-14 revisada: faxina cujas tarefas foram excluídas */
+.taskTagEmpty {
+  color: var(--text-muted);
+  border-style: dashed;
+  font-style: italic;
+}
+
 /* Micro-Animação da Gaveta de Badges Excedentes via CSS Grid */
 .overflowDrawer {
   display: grid;

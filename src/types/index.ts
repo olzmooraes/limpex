@@ -40,6 +40,9 @@ export interface Badge {
   isSystem: boolean; // true para os 14 padrões, false para os até 20 customizados
   displayOrder?: number;
   createdAt: string;
+  // Exclusão lógica (RN-14 revisada): o badge some da gestão e do formulário,
+  // mas o nome continua no histórico das faxinas.
+  deletedAt?: string;
 }
 
 export interface CleaningRecord {

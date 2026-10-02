@@ -69,6 +69,10 @@ export const CleaningCard: React.FC<CleaningCardProps> = ({
             {name}
           </span>
         ))}
+        {/* RN-14 revisada: a única tarefa foi excluída nesta semana */}
+        {card.badgeNames.length === 0 && (
+          <span className={`${styles.taskTag} ${styles.taskTagEmpty}`}>Sem tarefas</span>
+        )}
       </div>
 
       {/* Gaveta Animada com CSS Grid para Badges Excedentes (Tarefas 3..N) */}

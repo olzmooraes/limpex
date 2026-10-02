@@ -14,7 +14,10 @@ import { CleaningFormPanel } from './components/cleaning/CleaningFormPanel';
 import { CleaningCard } from './components/cleaning/CleaningCard';
 import { signOut } from './data/auth';
 import { useSession } from './hooks/useSession';
-import { dbService } from './services/supabase';
+import { getMyHouses, getHouseMembers, createHouse, joinHouse, deleteHouse } from './data/houses';
+import { getBadges, activeBadges, createBadge, renameBadge, deleteBadge } from './data/badges';
+import { getCleanings, createCleaning } from './data/cleanings';
+import { toAppError } from './lib/appError';
 import { MAX_TOTAL_BADGES } from './services/badgeDefinitions';
 import { getStoredActiveHouseId, saveActiveHouseId, resolveActiveHouse } from './services/houseSelection';
 import { buildCleaningCardView, formatRecordCount } from './services/cleaningWeekView';
@@ -61,22 +64,47 @@ export const App: React.FC = () => {
   // TSK-407/SPEC-020: semana vigente e "hoje" em Brasília, atualizados à meia-noite
   const weekContext = useCurrentWeek();
 
+  // SPEC-022 E3: falha ao carregar dados da rede → aviso com "Tentar novamente"
+  const [dataError, setDataError] = useState<string | null>(null);
+  const [reloadNonce, setReloadNonce] = useState(0);
+  const reportLoadError = (err: unknown) => setDataError(toAppError(err).message);
+  const retryLoad = () => {
+    setDataError(null);
+    setReloadNonce((n) => n + 1);
+  };
+
+  // SPEC-022: ao trocar de usuário (login/logout) a interface volta ao estado
+  // inicial, sem aba, casa ou mensagens do usuário anterior. Declarado antes do
+  // carregamento das casas para rodar primeiro.
+  const currentUserId = currentUser?.id;
+  useEffect(() => {
+    setActiveTab('home');
+    setUserHouses([]);
+    setActiveHouse(null);
+    setHousesMessage(null);
+    setDataError(null);
+    setExpandedCardId(null);
+  }, [currentUserId]);
+
   // Carregar as casas do usuário (TSK-203) e manter a casa ativa para o código de convite
   useEffect(() => {
     if (!currentUser) return;
     let cancelled = false;
-    dbService.getUserHouses(currentUser.id).then((houses) => {
-      if (cancelled) return;
-      setUserHouses(houses);
-      // TSK-204: elege a casa ativa persistida ou a primeira da lista (RN-19)
-      setActiveHouse(resolveActiveHouse(houses, getStoredActiveHouseId()));
-    });
+    getMyHouses()
+      .then((houses) => {
+        if (cancelled) return;
+        setUserHouses(houses);
+        // TSK-204: elege a casa ativa persistida ou a primeira da lista (RN-19)
+        setActiveHouse(resolveActiveHouse(houses, getStoredActiveHouseId()));
+      })
+      .catch((err) => !cancelled && reportLoadError(err));
     return () => {
       cancelled = true;
     };
-  }, [currentUser]);
+  }, [currentUser, reloadNonce]);
 
-  // TSK-302/SPEC-010: Carregar badges da casa ativa (RN-19) e recarregar ao trocar de casa
+  // TSK-302/SPEC-010: Carregar badges da casa ativa (RN-19), inclusive os excluídos,
+  // que continuam nomeando tarefas no histórico (RN-14 revisada)
   useEffect(() => {
     if (!activeHouse) {
       setHouseBadges(null);
@@ -85,15 +113,14 @@ export const App: React.FC = () => {
     }
     let cancelled = false;
     setBadgesLoading(true);
-    dbService.getHouseBadges(activeHouse.id).then((badges) => {
-      if (cancelled) return;
-      setHouseBadges(badges);
-      setBadgesLoading(false);
-    });
+    getBadges(activeHouse.id)
+      .then((badges) => !cancelled && setHouseBadges(badges))
+      .catch((err) => !cancelled && reportLoadError(err))
+      .finally(() => !cancelled && setBadgesLoading(false));
     return () => {
       cancelled = true;
     };
-  }, [activeHouse]);
+  }, [activeHouse, reloadNonce]);
 
   // TSK-402/SPEC-015: Carregar membros da casa ativa (RN-09) e recarregar ao trocar de casa
   useEffect(() => {
@@ -104,15 +131,14 @@ export const App: React.FC = () => {
     }
     let cancelled = false;
     setMembersLoading(true);
-    dbService.getHouseMembers(activeHouse.id).then((members) => {
-      if (cancelled) return;
-      setHouseMembers(members);
-      setMembersLoading(false);
-    });
+    getHouseMembers(activeHouse.id)
+      .then((members) => !cancelled && setHouseMembers(members))
+      .catch((err) => !cancelled && reportLoadError(err))
+      .finally(() => !cancelled && setMembersLoading(false));
     return () => {
       cancelled = true;
     };
-  }, [activeHouse]);
+  }, [activeHouse, reloadNonce]);
 
   // TSK-404/SPEC-017 + TSK-407/SPEC-020: Carregar faxinas da semana vigente (domingo a
   // sábado, Brasília) da casa ativa (RN-06/RN-08/RN-19). Recarrega ao trocar de casa,
@@ -125,20 +151,17 @@ export const App: React.FC = () => {
     }
     let cancelled = false;
     setWeeklyLoading(true);
-    dbService
-      .getCleaningRecords(activeHouse.id, { from: weekContext.start, to: weekContext.end })
-      .then((records) => {
-        if (cancelled) return;
-        setWeeklyRecords(records);
-        setWeeklyLoading(false);
-      });
+    getCleanings(activeHouse.id, { from: weekContext.start, to: weekContext.end })
+      .then((records) => !cancelled && setWeeklyRecords(records))
+      .catch((err) => !cancelled && reportLoadError(err))
+      .finally(() => !cancelled && setWeeklyLoading(false));
     return () => {
       cancelled = true;
     };
-  }, [activeHouse, homeRefreshNonce, weekContext.start, weekContext.end]);
+  }, [activeHouse, homeRefreshNonce, weekContext.start, weekContext.end, reloadNonce]);
 
-  const refreshUserHouses = async (userId: string): Promise<House[]> => {
-    const houses = await dbService.getUserHouses(userId);
+  const refreshUserHouses = async (): Promise<House[]> => {
+    const houses = await getMyHouses();
     setUserHouses(houses);
     setActiveHouse(resolveActiveHouse(houses, getStoredActiveHouseId()));
     return houses;
@@ -157,22 +180,15 @@ export const App: React.FC = () => {
       return;
     }
 
-    const res = await dbService.createHouse(name, currentUser.id, currentUser.name, currentUser.email);
-    if (!res.success || !res.house) {
-      setHousesMessage({
-        type: 'error',
-        text: res.errorCode === 'HOUSE_LIMIT_REACHED'
-          ? 'Você já é criador de uma casa.' // SPEC-008 §5 (estado descritivo)
-          : (res.error ?? 'Não foi possível criar a casa.')
-      });
-      return;
+    try {
+      const house = await createHouse(name);
+      setNewHouseName('');
+      setHousesMessage({ type: 'success', text: `Casa "${house.name}" criada com sucesso!` });
+      saveActiveHouseId(house.id);
+      await refreshUserHouses();
+    } catch (err) {
+      setHousesMessage({ type: 'error', text: toAppError(err).message });
     }
-
-    setNewHouseName('');
-    setHousesMessage({ type: 'success', text: `Casa "${res.house.name}" criada com sucesso!` });
-    await refreshUserHouses(currentUser.id);
-    setActiveHouse(res.house);
-    saveActiveHouseId(res.house.id);
   };
 
   const handleJoinHouse = async () => {
@@ -183,43 +199,34 @@ export const App: React.FC = () => {
       return;
     }
 
-    const res = await dbService.joinHouseByInviteCode(code, currentUser.id, currentUser.name, currentUser.email);
-    if (!res.success || !res.house) {
-      setHousesMessage({ type: 'error', text: res.error ?? 'Não foi possível entrar na casa.' });
-      return;
+    try {
+      const house = await joinHouse(code);
+      setJoinCodeInput('');
+      setHousesMessage({ type: 'success', text: `Você entrou na casa "${house.name}"!` });
+      saveActiveHouseId(house.id);
+      await refreshUserHouses();
+    } catch (err) {
+      setHousesMessage({ type: 'error', text: toAppError(err).message });
     }
-
-    setJoinCodeInput('');
-    setHousesMessage({ type: 'success', text: `Você entrou na casa "${res.house.name}"!` });
-    await refreshUserHouses(currentUser.id);
-    setActiveHouse(res.house);
-    saveActiveHouseId(res.house.id);
   };
 
   const activeInviteCode = activeHouse?.inviteCode ?? '------';
 
-  // TSK-205: Exclusão de casa restrita exclusivamente ao proprietário (RN-21)
+  // TSK-205: Exclusão de casa restrita ao proprietário (RN-21); o banco grava o log (RN-22)
   const handleDeleteHouse = async (houseId: string) => {
     if (!currentUser) return;
+    const houseName = userHouses.find((h) => h.id === houseId)?.name ?? '';
     setIsDeletingHouse(true);
-    const res = await dbService.deleteHouseWithLog(houseId, currentUser.id, currentUser.name);
-    setIsDeletingHouse(false);
-    setHousePendingDelete(null);
-
-    if (!res.success) {
-      setHousesMessage({
-        type: 'error',
-        text: res.errorCode === 'NOT_HOUSE_OWNER'
-          ? 'Você não é o proprietário desta casa. Apenas o criador pode excluí-la.'
-          : (res.error ?? 'Não foi possível excluir a casa.')
-      });
-      return;
-    }
-
-    setHousesMessage({ type: 'success', text: `Casa "${res.house?.name}" excluída com sucesso.` });
-    await refreshUserHouses(currentUser.id);
-    if (getStoredActiveHouseId() === houseId) {
-      saveActiveHouseId(null);
+    try {
+      await deleteHouse(houseId);
+      if (getStoredActiveHouseId() === houseId) saveActiveHouseId(null);
+      setHousesMessage({ type: 'success', text: `Casa "${houseName}" excluída com sucesso.` });
+      await refreshUserHouses();
+    } catch (err) {
+      setHousesMessage({ type: 'error', text: toAppError(err).message });
+    } finally {
+      setIsDeletingHouse(false);
+      setHousePendingDelete(null);
     }
   };
 
@@ -252,65 +259,44 @@ export const App: React.FC = () => {
     signOut().catch(() => undefined);
   };
 
-  // TSK-303: Criar badge customizado (RN-11 / RN-12)
-  const handleCreateBadge = async (badgeName: string): Promise<{ success: boolean; error?: string }> => {
-    if (!activeHouse) {
-      return { success: false, error: 'Nenhuma casa ativa selecionada.' };
+  // TSK-303/304/305: gestão de badges pelas RPCs; tetos (RN-11/12), permissão do
+  // criador (RN-21) e log de exclusão (RN-15) são aplicados pelo banco.
+  const runBadgeAction = async (action: (houseId: string) => Promise<unknown>): Promise<{ success: boolean; error?: string }> => {
+    if (!activeHouse) return { success: false, error: 'Nenhuma casa ativa selecionada.' };
+    try {
+      await action(activeHouse.id);
+      setHouseBadges(await getBadges(activeHouse.id));
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: toAppError(err).message };
     }
-    const res = await dbService.addCustomBadge(activeHouse.id, badgeName);
-    if (res.success) {
-      const updatedBadges = await dbService.getHouseBadges(activeHouse.id);
-      setHouseBadges(updatedBadges);
-    }
-    return res;
   };
 
-  // TSK-304: Renomear badge (RN-13 / RN-21) — apenas o criador da casa
-  const handleEditBadge = async (badgeId: string, newName: string): Promise<{ success: boolean; error?: string }> => {
-    if (!currentUser) {
-      return { success: false, error: 'Nenhum usuário autenticado.' };
-    }
-    if (!activeHouse) {
-      return { success: false, error: 'Nenhuma casa ativa selecionada.' };
-    }
-    const res = await dbService.renameBadge(activeHouse.id, badgeId, newName, currentUser.id);
-    if (res.success) {
-      const updatedBadges = await dbService.getHouseBadges(activeHouse.id);
-      setHouseBadges(updatedBadges);
-    }
-    return res;
-  };
+  const handleCreateBadge = (badgeName: string) => runBadgeAction((houseId) => createBadge(houseId, badgeName));
 
-  // TSK-305: Excluir badge (RN-14 / RN-15 / RN-21) — apenas o criador da casa
-  const handleDeleteBadge = async (badgeId: string): Promise<{ success: boolean; error?: string }> => {
-    if (!currentUser) {
-      return { success: false, error: 'Nenhum usuário autenticado.' };
-    }
-    if (!activeHouse) {
-      return { success: false, error: 'Nenhuma casa ativa selecionada.' };
-    }
-    const res = await dbService.deleteBadgeWithLog(
-      activeHouse.id,
-      badgeId,
-      currentUser.id,
-      currentUser.name
-    );
-    if (res.success) {
-      const updatedBadges = await dbService.getHouseBadges(activeHouse.id);
-      setHouseBadges(updatedBadges);
-    }
-    return res;
-  };
+  const handleEditBadge = (badgeId: string, newName: string) => runBadgeAction(() => renameBadge(badgeId, newName));
 
-  // TSK-403/SPEC-016: Persiste o payload do formulário de faxina (RN-20).
+  const handleDeleteBadge = (badgeId: string) => runBadgeAction(() => deleteBadge(badgeId));
+
+  // TSK-403/SPEC-016: registra a faxina pela RPC (RN-20); erros vêm traduzidos do banco.
   const handleSubmitCleaning = async (payload: CleaningRecord): Promise<void> => {
-    const res = await dbService.createCleaningRecord(payload);
-    if (!res.success) {
-      throw new Error(res.error || res.errorCode || 'Falha ao persistir o registro de faxina.');
+    try {
+      await createCleaning({
+        houseId: payload.houseId,
+        responsibleId: payload.userId,
+        cleaningDate: payload.cleaningDate,
+        badgeIds: payload.badgeIds,
+        notes: payload.notes
+      });
+    } catch (err) {
+      throw toAppError(err);
     }
     // TSK-404/SPEC-017: nova faxina entra imediatamente na lista da semana vigente (RN-06/RN-08)
     setHomeRefreshNonce((n) => n + 1);
   };
+
+  // RN-14 revisada: gestão, formulário e contadores usam só os badges ativos
+  const activeHouseBadges = useMemo(() => (houseBadges ? activeBadges(houseBadges) : null), [houseBadges]);
 
   // TSK-404/SPEC-017: Cards da semana vigente derivados dos registros + badges da casa ativa
   const weeklyCards = useMemo(
@@ -365,6 +351,17 @@ export const App: React.FC = () => {
 
       {/* Área de Conteúdo com Rolagem Touch */}
       <section className={styles.contentArea}>
+        {/* SPEC-022 E3: falha de rede ao carregar dados */}
+        {dataError && (
+          <div role="alert" className={`${styles.statusBanner} ${styles.statusError}`}>
+            <AlertTriangle size={16} />
+            <span>{dataError}</span>
+            <button type="button" className={styles.retryButton} onClick={retryLoad}>
+              Tentar novamente
+            </button>
+          </div>
+        )}
+
         {/* ABA 1: INÍCIO / SEMANA VIGENTE — TSK-404/SPEC-017 */}
         {activeTab === 'home' && (
           <div className={styles.tabContent}>
@@ -431,7 +428,7 @@ export const App: React.FC = () => {
                 <h1 className={styles.sectionHeading}>Badges da Casa</h1>
               </div>
               <div className={styles.counterPill}>
-                {houseBadges ? `${houseBadges.length} / ${MAX_TOTAL_BADGES} badges` : `${MAX_TOTAL_BADGES} badges`}
+                {activeHouseBadges ? `${activeHouseBadges.length} / ${MAX_TOTAL_BADGES} badges` : `${MAX_TOTAL_BADGES} badges`}
               </div>
             </div>
 
@@ -441,7 +438,7 @@ export const App: React.FC = () => {
 
             <BadgeManagementPanel
               house={activeHouse}
-              badges={houseBadges}
+              badges={activeHouseBadges}
               isLoading={badgesLoading}
               currentUserId={currentUser.id}
               onRequestCreateBadge={() => setIsCreateBadgeModalOpen(true)}
@@ -468,7 +465,7 @@ export const App: React.FC = () => {
             <CleaningFormPanel
               house={activeHouse}
               members={houseMembers}
-              badges={houseBadges}
+              badges={activeHouseBadges}
               isLoading={badgesLoading || membersLoading}
               currentUser={currentUser}
               today={weekContext.today}
@@ -728,7 +725,7 @@ export const App: React.FC = () => {
         isOpen={isCreateBadgeModalOpen}
         onClose={() => setIsCreateBadgeModalOpen(false)}
         onSubmit={handleCreateBadge}
-        existingBadges={houseBadges ?? []}
+        existingBadges={activeHouseBadges ?? []}
       />
 
       {/* TSK-304: Modal de edição (renomear) de badge — apenas criador (RN-21) */}
@@ -737,7 +734,7 @@ export const App: React.FC = () => {
         badge={editingBadge}
         onClose={() => setEditingBadge(null)}
         onSubmit={handleEditBadge}
-        existingBadges={houseBadges ?? []}
+        existingBadges={activeHouseBadges ?? []}
       />
 
       {/* TSK-305: Modal de confirmação de exclusão de badge — apenas criador (RN-21) */}

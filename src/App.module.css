@@ -469,6 +469,20 @@
   color: #f87171;
 }
 
+/* SPEC-022 E3: "Tentar novamente" no aviso de falha de rede */
+.retryButton {
+  margin-left: auto;
+  flex-shrink: 0;
+  min-height: var(--touch-target-min, 44px);
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid currentColor;
+  color: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .houseList {
   display: flex;
   flex-direction: column;
