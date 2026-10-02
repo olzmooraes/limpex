@@ -1,7 +1,4 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { runAuthCredentialsTest } from './auth-credentials.test';
-import { runCapacityCheckServiceTest } from './capacity-check.test';
-import { runMaxUsersLimitSimulationTest } from './max-users-limit.test';
 import { runHouseConstraintSimulationTest } from './houses-constraint.test';
 import { runInviteCodeSimulationTest } from './invite-code.test';
 import { runHousesPanelSimulationTest } from './houses-panel-tsk203.test';
@@ -17,7 +14,6 @@ import { runCleaningPersistenceSimulationTest } from './cleaning-persistence-tsk
 import { runHomeWeekSimulationTest } from './home-week-tsk404.test';
 import { runCardExpandableSimulationTest } from './card-expandable-tsk405.test';
 import { runCleaningNotesIndicatorSimulationTest } from './cleaning-notes-indicator-tsk406.test';
-import { runEpic1Audit } from './runEpic1Audit';
 
 /**
  * Ponte temporária (TSK-701): executa as simulações legadas — escritas para o
@@ -29,9 +25,6 @@ import { runEpic1Audit } from './runEpic1Audit';
 type LegacySuite = () => Promise<{ passed: boolean; message: string; details?: Record<string, unknown> }>;
 
 const suites: [string, LegacySuite][] = [
-  ['Épico 1 · credenciais de autenticação', runAuthCredentialsTest],
-  ['Épico 1 · consulta de capacidade', runCapacityCheckServiceTest],
-  ['Épico 1 · teto de 100 usuários', runMaxUsersLimitSimulationTest],
   ['Épico 2 · 1 casa por criador', runHouseConstraintSimulationTest],
   ['Épico 2 · código de convite', runInviteCodeSimulationTest],
   ['Épico 2 · aba de casas (TSK-203)', runHousesPanelSimulationTest],
@@ -55,12 +48,5 @@ describe('Simulações legadas (mock localStorage)', () => {
   it.each(suites)('%s', async (_name, run) => {
     const result = await run();
     expect(result.passed, `${result.message}\n${JSON.stringify(result.details ?? {}, null, 2)}`).toBe(true);
-  });
-
-  // Gates do Épico 1 (TSK-107) com cenários próprios: carga de 100 usuários e bloqueio do 101º.
-  it('Épico 1 · auditoria do teto de 100 usuários (TSK-107)', async () => {
-    const report = await runEpic1Audit();
-    const failed = report.gates.filter((g) => !g.passed);
-    expect(failed, JSON.stringify(failed, null, 2)).toEqual([]);
   });
 });

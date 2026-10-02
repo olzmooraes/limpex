@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { authService, SystemCapacity } from '../services/authService';
+import { getSystemCapacity, SystemCapacity } from '../data/auth';
 
 export interface UseSystemCapacityReturn extends SystemCapacity {
   isLoading: boolean;
@@ -8,8 +8,9 @@ export interface UseSystemCapacityReturn extends SystemCapacity {
 }
 
 /**
- * Custom Hook reativo para consulta prévia do teto de 100 usuários
- * Alimenta dinamicamente a tela inicial de autenticação
+ * RN-01: consulta prévia do teto de 100 usuários para a tela de autenticação.
+ * Em caso de falha, o cadastro continua visível: o servidor barra o excesso
+ * de qualquer forma (trigger em auth.users).
  */
 export const useSystemCapacity = (): UseSystemCapacityReturn => {
   const [capacity, setCapacity] = useState<SystemCapacity>({
@@ -24,10 +25,9 @@ export const useSystemCapacity = (): UseSystemCapacityReturn => {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await authService.checkCapacity();
-      setCapacity(data);
-    } catch (err: any) {
-      setError(err?.message || 'Não foi possível consultar a capacidade do sistema.');
+      setCapacity(await getSystemCapacity());
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Não foi possível consultar a capacidade do sistema.');
     } finally {
       setIsLoading(false);
     }

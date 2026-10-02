@@ -38,19 +38,18 @@ describe('toAppError', () => {
     expect(error).toMatchObject({ code, message });
   });
 
-  it('falha ao gravar usuário no Auth (teto ou trigger) vira SIGNUP_FAILED', () => {
-    const error = toAppError({
-      name: 'AuthApiError',
-      status: 500,
-      code: 'unexpected_failure',
-      message: 'Database error saving new user'
-    });
-    expect(error.code).toBe('SIGNUP_FAILED');
+  it.each([
+    [{ name: 'AuthApiError', status: 500, code: 'unexpected_failure', message: 'Database error saving new user' }],
+    // Forma real devolvida pelo supabase-js quando o trigger do teto recusa o cadastro
+    [{ name: 'AuthRetryableFetchError', status: 500, message: 'Database error saving new user' }]
+  ])('falha ao gravar usuário no Auth (teto ou trigger) vira SIGNUP_FAILED', (raw) => {
+    expect(toAppError(raw).code).toBe('SIGNUP_FAILED');
   });
 
   it.each([
     [new TypeError('Failed to fetch')],
     [{ name: 'AuthRetryableFetchError', status: 0, message: 'Failed to fetch' }],
+    [{ name: 'AuthRetryableFetchError', status: 503, message: 'Service Unavailable' }],
     [{ code: '', message: 'TypeError: NetworkError when attempting to fetch resource.' }]
   ])('falha de rede → NETWORK_ERROR', (raw) => {
     expect(toAppError(raw)).toMatchObject({

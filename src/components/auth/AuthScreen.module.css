@@ -346,3 +346,56 @@
   color: var(--color-primary-400);
   border-color: var(--color-primary-500);
 }
+
+/* SPEC-022 E2: recuperação de senha */
+.linkButton {
+  align-self: flex-end;
+  min-height: var(--touch-target-min, 44px);
+  padding: 0 4px;
+  background: transparent;
+  border: none;
+  color: var(--color-primary-400);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.linkButton:hover {
+  text-decoration: underline;
+}
+
+.infoMessage {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid var(--color-primary-500);
+  border-radius: var(--radius-sm);
+  color: var(--color-primary-300);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.infoMessage svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.forgotHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.forgotTitle {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.forgotDescription {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}

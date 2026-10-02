@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { TabId, User, House, Badge, HouseMember, CleaningRecord } from './types';
+import { TabId, House, Badge, HouseMember, CleaningRecord } from './types';
 import { MobileContainer } from './components/layout/MobileContainer';
 import { Header } from './components/layout/Header';
 import { BottomNavbar } from './components/layout/BottomNavbar';
 import { AuthScreen } from './components/auth/AuthScreen';
+import { SetNewPasswordScreen } from './components/auth/SetNewPasswordScreen';
+import { ConfigMissingScreen } from './components/auth/ConfigMissingScreen';
 import { BadgeManagementPanel } from './components/badges/BadgeManagementPanel';
 import { BadgeCreateModal } from './components/badges/BadgeCreateModal';
 import { BadgeEditModal } from './components/badges/BadgeEditModal';
 import { BadgeDeleteModal } from './components/badges/BadgeDeleteModal';
 import { CleaningFormPanel } from './components/cleaning/CleaningFormPanel';
 import { CleaningCard } from './components/cleaning/CleaningCard';
-import { authService } from './services/authService';
+import { signOut } from './data/auth';
+import { useSession } from './hooks/useSession';
 import { dbService } from './services/supabase';
 import { MAX_TOTAL_BADGES } from './services/badgeDefinitions';
 import { getStoredActiveHouseId, saveActiveHouseId, resolveActiveHouse } from './services/houseSelection';
@@ -32,7 +35,9 @@ import {
 import styles from './App.module.css';
 
 export const App: React.FC = () => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  // SPEC-022 E2: sessão real do Supabase Auth + perfil público
+  const { session, completeRecovery } = useSession();
+  const currentUser = session.status === 'signed-in' ? session.user : null;
   const [activeTab, setActiveTab] = useState<TabId>('home');
   const [activeHouse, setActiveHouse] = useState<House | null>(null);
   const [userHouses, setUserHouses] = useState<House[]>([]);
@@ -55,14 +60,6 @@ export const App: React.FC = () => {
   const [deletingBadge, setDeletingBadge] = useState<Badge | null>(null);
   // TSK-407/SPEC-020: semana vigente e "hoje" em Brasília, atualizados à meia-noite
   const weekContext = useCurrentWeek();
-
-  // Carregar sessão existente ao iniciar
-  useEffect(() => {
-    const existing = authService.getCurrentUser();
-    if (existing) {
-      setCurrentUser(existing);
-    }
-  }, []);
 
   // Carregar as casas do usuário (TSK-203) e manter a casa ativa para o código de convite
   useEffect(() => {
@@ -250,9 +247,9 @@ export const App: React.FC = () => {
     handleCopyCode();
   };
 
+  // SPEC-022 E2: o useSession volta para a tela de login ao receber SIGNED_OUT
   const handleLogout = () => {
-    authService.logout();
-    setCurrentUser(null);
+    signOut().catch(() => undefined);
   };
 
   // TSK-303: Criar badge customizado (RN-11 / RN-12)
@@ -321,11 +318,36 @@ export const App: React.FC = () => {
     [weeklyRecords, houseBadges]
   );
 
+  // SPEC-022 E2: telas fora da sessão
+  if (session.status === 'unconfigured') {
+    return (
+      <MobileContainer>
+        <ConfigMissingScreen />
+      </MobileContainer>
+    );
+  }
+  if (session.status === 'loading') {
+    return (
+      <MobileContainer>
+        <div className={styles.loadingState}>
+          <Loader2 className={styles.spinner} size={22} />
+          <span>Carregando...</span>
+        </div>
+      </MobileContainer>
+    );
+  }
+  if (session.status === 'password-recovery') {
+    return (
+      <MobileContainer>
+        <SetNewPasswordScreen onDone={completeRecovery} />
+      </MobileContainer>
+    );
+  }
   // Se o usuário não estiver autenticado, exibe a Tela de Autenticação (RN-01 a RN-05)
   if (!currentUser) {
     return (
       <MobileContainer>
-        <AuthScreen onAuthSuccess={(user) => setCurrentUser(user)} />
+        <AuthScreen />
       </MobileContainer>
     );
   }

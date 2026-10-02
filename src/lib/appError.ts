@@ -36,8 +36,10 @@ type ErrorLike = {
   status?: unknown;
 };
 
+// O supabase-js usa AuthRetryableFetchError tanto para falha de rede (status 0,
+// 502-504) quanto para respostas 500 do Auth — estas não são falha de rede.
 const isNetworkFailure = (error: ErrorLike): boolean =>
-  error.name === 'AuthRetryableFetchError' ||
+  (error.name === 'AuthRetryableFetchError' && error.status !== 500) ||
   (typeof error.message === 'string' && /failed to fetch|networkerror|network request failed/i.test(error.message));
 
 export function toAppError(error: unknown): AppError {
